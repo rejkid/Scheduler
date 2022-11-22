@@ -1,0 +1,29 @@
+
+<div class="form-group col" *ngIf="isLoaded">
+    <label>Functions of {{account.firstName}}</label>
+</div>
+<form [formGroup]="form" *ngIf="isLoaded && !isAdmin" class="card-body">
+
+
+    <div class="border border-primary">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:20%">Function</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="functions">
+                <tr *ngFor="let s of userFunctions">
+                    <td>{{s.userFunction}} </td>
+
+            </tbody>
+
+        </table>
+    </div>
+    <!--/div-->
+    <div class="form-group">
+
+        <a routerLink="/schedule" class="btn btn-link">Back</a>
+    </div>
+
+</form>

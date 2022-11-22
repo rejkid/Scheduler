@@ -1,0 +1,96 @@
+<form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
+
+    <div class="form-row">
+        <div class="form-group col-5">
+            <label>Define schedules for {{account.firstName}}</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col">
+            <label>Date</label>
+            <input type="datetime-local" formControlName="scheduledDate" class="form-control">
+
+        </div>
+        <div class="form-group col">
+            <label>Function</label>
+            <select formControlName="function" class="form-select"
+                [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
+                <!--option *ngFor="let item of functions" [value]='item'>
+                    {{ item }}
+                </option-->
+                <option *ngFor="let item of userFunctions" [value]='item.userFunction'>
+                    {{ item.userFunction }}
+                </option>
+            </select>
+
+            <div *ngIf="submitted && form.controls['function'].hasError('invalidFunction')" class="alert alert-danger">
+                Function can't be empty</div>
+        </div>
+
+    </div>
+
+    <div class="form-row" *ngIf="!isLoggedAsAdmin">
+        <div class="form-group col-5">
+            <label>Available Dates</label>
+            <!--input type="datetime-local" formControlName="availableScheduledDate" class="form-control" -->
+            <select #element (change)="onSelectAvailableDate($event, element)" formControlName="availableScheduledDate"
+                class="form-control" [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
+                <option *ngFor="let item of poolElements" [value]='item.date'>
+                    {{ item.date }}
+                </option>
+            </select>
+
+        </div>
+        <div class="form-group col">
+            <label>Available Function</label>
+            <select formControlName="availableFunction" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
+                <option *ngFor="let item of poolElements" [value]='item.userFunction'>
+                    {{ item.userFunction }}
+                </option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="border border-primary">
+        <table id=scheduledTable class="table table-striped">
+            <thead>
+                <tr>
+
+                    <th style="width:20%">Date</th>
+                    <th style="width:20%">Function</th>
+                    <th style="width:20%"></th>
+
+                </tr>
+            </thead>
+            <tbody *ngIf="schedules">
+                <tr *ngFor="let s of schedules">
+                    <td>{{s.date}} </td>
+
+                    <td>{{s.userFunction}} </td>
+
+                    <!-- <td class=" text-left" width="20">
+                        <input name="userAvailability" type="checkbox" [checked]="s.userAvailability"
+                            [disabled]="isLoggedAsAdmin">
+                    </td> -->
+
+                    <td style="white-space: nowrap" *ngIf="isLoggedAsAdmin">
+                        <button type="button" (click)="onDeleteSchedule(s.id)" class="btn btn-sm btn-danger btn-delete-account">
+                            <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <div class="form-group" *ngIf="isLoggedAsAdmin">
+                <button type="button" (click)="onAddSchedule()" class="btn btn-primary" [ngClass]="{ 'disabled': !form.controls['scheduledDate'].valid}">
+                    <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
+                </button>
+            </div>
+        </table>
+    </div>
+    <div type="button" class="form-group">
+        <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
+    </div>
+    <div class="row mt-3"></div>
+</form>

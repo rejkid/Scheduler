@@ -1,0 +1,47 @@
+<form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
+    <div class="border-primary">
+        <div class="form-row" *ngIf="isLoggedAsAdmin">
+            <div class="form-group col-5">
+                <label>Choose Functions for {{account.firstName}}</label>
+                <select formControlName="function" class="form-select"
+                    [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
+                    <option *ngFor="let item of functions" [value]='item'>
+                        {{ item }}
+                    </option>
+                </select>
+
+                <div *ngIf="submitted && form.controls['function'].hasError('invalidFunction')"
+                    class="alert alert-danger">Function can't be empty</div>
+            </div>
+
+        </div>
+        <div class="border border-primary">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Function</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="functions">
+                    <tr *ngFor="let s of userFunctions">
+                        <td>{{s.userFunction}} </td>
+                        <td style="white-space: nowrap" *ngIf="accountService.isAdmin()">
+
+                            <button type="button" (click)="deleteFunction(s)"
+                                class="btn btn-sm btn-danger btn-delete-account"> Delete
+                            </button>
+                        </td>
+                </tbody>
+                <div class="form-group">
+                    <button type="button" (click)="addFunction()" class="btn btn-primary">
+                        Add Function
+                    </button>
+                </div>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
+    </div>
+
+</form>

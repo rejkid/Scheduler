@@ -1,0 +1,70 @@
+<div class="form-group col" *ngIf="isLoaded">
+    <label>Schedules for {{account.firstName}}</label>
+</div>
+<form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
+    <fieldset>
+        <legend>Available Dates:</legend>
+        <div *ngIf="!isLoggedAsAdmin">
+            <div class="col">
+                <label>Date/Time</label>
+                <select #element (change)="onSelectAvailableDate($event, element)"
+                    formControlName="availableScheduledDate" class="form-select"
+                    [ngClass]="{ 'is-invalid': submitted && f['availableFunction'].errors }">
+                    <option *ngFor="let item of poolElements" [value]='item.date'>
+                        {{ item.date }}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Function</label>
+                <select formControlName="availableFunction" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f['availableFunction'].errors }">
+                    <option *ngFor="let item of poolElements" [value]='item.userFunction'>
+                        {{ item.userFunction }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <button type="button" (click)="onAddAvailableSchedule()" class="btn btn-primary"
+            [ngClass]="{ 'disabled': !form.controls['availableScheduledDate'].valid}">
+            <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
+        </button>
+    </fieldset>
+
+
+    <br>
+    <fieldset>
+        <legend>Assigned Dates:</legend>
+        <div class="border ">
+            <table id=scheduledTable class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Date/Time</th>
+                        <th style="width:20%">Function</th>
+                        <th style="width:20%"></th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="schedules">
+                    <tr *ngFor="let s of schedules">
+                        <td>{{s.date}} </td>
+                        <td>{{s.userFunction}} </td>
+                        <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
+
+                            <button class="btn btn-sm btn-danger btn-delete-account" type="button"
+                                (click)="onDeleteSchedule($event, s.id)">
+                                <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+
+
+            </table>
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
+    </div>
+    <div class="row mt-3"></div>
+</form>
