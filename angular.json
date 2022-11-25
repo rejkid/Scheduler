@@ -39,7 +39,7 @@
           },
           "configurations": {
             "production": {
-              "sourceMap": true,
+              "sourceMap": false,
               "budgets": [
                 {
                   "type": "initial",
