@@ -24,7 +24,7 @@ export class VerifyEmailComponent implements OnInit {
     ngOnInit() {
         const token = this.route.snapshot.queryParams['token'];
 
-        alert("Its working");
+        alert("Its working-1");
         // remove token from url to prevent http referer leakage
         this.router.navigate([], { relativeTo: this.route, replaceUrl: true });
 
@@ -34,7 +34,7 @@ export class VerifyEmailComponent implements OnInit {
                 next: () => {
                     this.alertService.success('Verification successful, you can now login', { keepAfterRouteChange: true });
                     this.router.navigate(['../login'], { relativeTo: this.route });
-                    alert("Its working");
+                    alert("Its working-2");
                 },
                 error: () => {
                     this.emailStatus = EmailStatus.Failed;
