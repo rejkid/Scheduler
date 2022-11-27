@@ -9,18 +9,18 @@ export function appInitializer(accountService: AccountService) {
     accountService.refreshToken()
       .subscribe({
         next: (value: any) => {
-          console.log("appInitializer2");
+          console.log("appInitializer OK");
         },
         error: (error: string) => {
           
-          console.log("Error in appInitializer");
+          console.log("Error in appInitializer (error)" + error);
         }
       })
       .add(resolve);
   }).then((message) => {
-    console.log("appInitializer2");
+    console.log("Error in appInitializer (then)" + message);
   }).catch((message) => {
-    console.log("Error in appInitializer");
+    console.log("Error in appInitializer(catch)" + message);
   });
 }
 
