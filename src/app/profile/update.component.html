@@ -1,9 +1,9 @@
 ﻿<h1>Update Profile</h1>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="row">
-        <div class="col-5">
+        <div class="col-2">
             <label>Title</label>
-            <select formControlName="title" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['title'].errors }">
+            <select formControlName="title" class="form-select" [ngClass]="{ 'is-invalid': submitted && f['title'].errors }">
                 <option value=""></option>
                 <option value="Mr">Mr</option>
                 <option value="Mrs">Mrs</option>
@@ -63,7 +63,7 @@
     
     <!-- <app-schedule [id]="id" (onScheduledAdded)="scheduledAdded($event)" ></app-schedule> -->
 
-    <div class="form-group">
+    <div class="mb-3">
         <button type="submit" [disabled]="loading" class="btn btn-primary mr-2">
             <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
             Update

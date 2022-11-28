@@ -1,17 +1,17 @@
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
 
     <div class="row">
-        <div class="form-group col-5">
+        <div class="mb-3 col-5">
             <label>Define schedules for {{account.firstName}}</label>
         </div>
     </div>
     <div class="row">
-        <div class="form-group col">
+        <div class="mb-3 col">
             <label>Date</label>
             <input type="datetime-local" formControlName="scheduledDate" class="form-control">
 
         </div>
-        <div class="form-group col">
+        <div class="mb-3 col">
             <label>Function</label>
             <select formControlName="function" class="form-select"
                 [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
@@ -30,7 +30,7 @@
     </div>
 
     <div class="row" *ngIf="!isLoggedAsAdmin">
-        <div class="form-group col-5">
+        <div class="mb-3 col-5">
             <label>Available Dates</label>
             <!--input type="datetime-local" formControlName="availableScheduledDate" class="form-control" -->
             <select #element (change)="onSelectAvailableDate($event, element)" formControlName="availableScheduledDate"
@@ -41,7 +41,7 @@
             </select>
 
         </div>
-        <div class="form-group col">
+        <div class="mb-3 col">
             <label>Available Function</label>
             <select formControlName="availableFunction" class="form-control"
                 [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
@@ -82,14 +82,14 @@
                     </td>
                 </tr>
             </tbody>
-            <div class="form-group" *ngIf="isLoggedAsAdmin">
+            <div class="mb-3" *ngIf="isLoggedAsAdmin">
                 <button type="button" (click)="onAddSchedule()" class="btn btn-primary" [ngClass]="{ 'disabled': !form.controls['scheduledDate'].valid}">
                     <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
                 </button>
             </div>
         </table>
     </div>
-    <div type="button" class="form-group">
+    <div type="button" class="mb-3">
         <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
     </div>
     <div class="row mt-3"></div>

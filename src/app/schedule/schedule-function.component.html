@@ -1,5 +1,5 @@
 
-<div class="form-group col" *ngIf="isLoaded">
+<div class="mb-3 col" *ngIf="isLoaded">
     <label>Functions of {{account.firstName}}</label>
 </div>
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin" class="card-body">
@@ -21,7 +21,7 @@
         </table>
     </div>
     <!--/div-->
-    <div class="form-group">
+    <div class="mb-3">
 
         <a routerLink="/schedule" class="btn btn-link">Back</a>
     </div>

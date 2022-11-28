@@ -1,4 +1,4 @@
-<div class="form-group col" *ngIf="isLoaded">
+<div class="mb-3 col" *ngIf="isLoaded">
     <label>Schedules for {{account.firstName}}</label>
 </div>
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
@@ -63,7 +63,7 @@
             </table>
         </div>
     </fieldset>
-    <div class="form-group">
+    <div class="mb-3">
         <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
     </div>
     <div class="row mt-3"></div>

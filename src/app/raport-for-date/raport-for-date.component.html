@@ -3,7 +3,7 @@
     <div class="container">
         <form [formGroup]="form" *ngIf="isLoaded">
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label for="dates">Dates:</label>
                 <select #dates formControlName="dates" class="form-select" (change)="onSelected(dates.value)">
 
