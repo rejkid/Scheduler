@@ -7,9 +7,7 @@
         <div *ngIf="!isLoggedAsAdmin">
             <div class="col">
                 <label>Date/Time</label>
-                <select #element 
-                    formControlName="availableSchedule4Function" class="form-select"
-                    [ngClass]="{ 'is-invalid': !submitted }">
+                <select #element formControlName="availableSchedule4Function" class="form-select">
                     <option *ngFor="let item of poolElements">
                         {{ item.date }}/{{ item.userFunction }}
                     </option>
