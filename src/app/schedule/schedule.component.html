@@ -9,8 +9,8 @@
                 <label>Date/Time</label>
                 <select #element 
                     formControlName="availableSchedule4Function" class="form-select"
-                    [ngClass]="{ 'is-invalid': submitted }">
-                    <option *ngFor="let item of poolElements" >
+                    [ngClass]="{ 'is-invalid': !submitted }">
+                    <option *ngFor="let item of poolElements">
                         {{ item.date }}/{{ item.userFunction }}
                     </option>
                 </select>
@@ -27,7 +27,7 @@
         </div>
         <br>
         <button type="button" (click)="onAddAvailableSchedule()" class="btn btn-primary"
-            [ngClass]="{ 'disabled': !form.controls['availableSchedule4Function'].valid}">
+            [ngClass]="{ 'disabled': !form.controls['availableSchedule4Function'].valid || poolElements.length <= 0}">
             <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
         </button>
     </fieldset>
