@@ -17,14 +17,16 @@
             </div>
         </div>
         <div class="row">
-            <div class="mb-3 col">
+            <div class="col-4">
                 <button [disabled]="loading" class="btn btn-primary">
                     <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                     Login
                 </button>
+            </div>
+            <div class="col-4">
                 <a routerLink="../register" class="btn btn-link">Register</a>
             </div>
-            <div class="mb-3 col text-right">
+            <div class="col-4">
                 <a routerLink="../forgot-password" class="btn btn-link pr-0">Forgot Password?</a>
             </div>
         </div>

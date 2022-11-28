@@ -69,15 +69,15 @@ export class ScheduleComponent implements OnInit {
                 this.functions = value;
 
                 this.form = this.formBuilder.group({
-                  availableScheduledDate: ['',],
-                  availableFunction: ['',],
+                  availableSchedule4Function: ['',]
+                  //availableFunction: ['',],
                 });
 
                 this.assignAndSortSchedules(account);
 
                 this.userFunctions = account.userFunctions.slice();
 
-                this.form.get('availableFunction').disable();
+                //this.form.get('availableFunction').disable();
 
                 this.account = account;
                 this.scheduleIndexer = account.schedules.length > 0 ? parseInt(account.schedules[account.schedules.length - 1].id) : 0;
@@ -85,6 +85,7 @@ export class ScheduleComponent implements OnInit {
                 this.userFunctionIndexer = account.userFunctions.length > 0 ? parseInt(account.userFunctions[account.userFunctions.length - 1].id) : 0;
 
 
+                var aDateValid = this.form.controls['availableSchedule4Function'].valid;
                 this.accountService.getAvailableSchedules(account.id)
                   .pipe(first())
                   .subscribe({
@@ -92,8 +93,8 @@ export class ScheduleComponent implements OnInit {
                       this.poolElements = pollElements.schedulePoolElements;
 
                       if (this.poolElements.length != 0) {
-                        this.form.get('availableScheduledDate').setValue(this.poolElements[0].date);
-                        this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
+                        this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/"+this.poolElements[0].userFunction);
+                        //this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
                       }
 
                       this.isLoaded = true;
@@ -122,19 +123,19 @@ export class ScheduleComponent implements OnInit {
     return null;
   }
 
-  onSelectAvailableDate(event: any, element: { value: string | number | Date; }) {
-    var date = element.value;
-    for (let index = 0; index < this.poolElements.length; index++) {
+  // onSelectAvailableDate(event: any, element: { value: string | number | Date; }) {
+  //   var date = element.value;
+  //   for (let index = 0; index < this.poolElements.length; index++) {
 
-      var poolDate = new Date(this.poolElements[index].date);
-      var selectedDate = new Date(element.value);
-      if (poolDate.getTime() == selectedDate.getTime()) {
-        var func = this.poolElements[index].userFunction;
-        this.form.get('availableFunction').setValue(this.poolElements[index].userFunction);
+  //     var poolDate = new Date(this.poolElements[index].date);
+  //     var selectedDate = new Date(element.value);
+  //     if (poolDate.getTime() == selectedDate.getTime()) {
+  //       var func = this.poolElements[index].userFunction;
+  //       this.form.get('availableFunction').setValue(this.poolElements[index].userFunction);
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
   // convenience getter for easy access to form fields
   get f() { return this.form.controls; }
 
@@ -150,8 +151,8 @@ export class ScheduleComponent implements OnInit {
     // var sD = this.form.controls['scheduledDate'].valid;
     // var func = this.form.controls['function'].valid;
 
-    var aDateValid = this.form.controls['availableScheduledDate'].valid;
-    var aF = this.form.controls['availableFunction'].valid;
+    var aDateValid = this.form.controls['availableSchedule4Function'].valid;
+    //var aF = this.form.controls['availableFunction'].valid;
     // JD
 
     // stop here if form is invalid
@@ -159,7 +160,7 @@ export class ScheduleComponent implements OnInit {
       return;
     }
 
-    var schedule = this.createSchedule4DateAndFunction('availableScheduledDate', 'availableFunction');
+    var schedule = this.createSchedule4DateAndFunction('availableSchedule4Function');
     if (schedule == null) {
       this.alertService.warn("Function for the Date already exists");
       return; // Function for the date already exists
@@ -177,8 +178,8 @@ export class ScheduleComponent implements OnInit {
 
 
           if (this.poolElements.length != 0) {
-            this.form.get('availableScheduledDate').setValue(this.poolElements[0].date);
-            this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
+            this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/" + this.poolElements[0].userFunction);
+            //this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
           }
           this.updateSchedulesAndPoolFromServer();
         },
@@ -209,8 +210,8 @@ export class ScheduleComponent implements OnInit {
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
-                  this.form.get('availableScheduledDate').setValue(this.poolElements[0].date);
-                  this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
+                  this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/" + this.poolElements[0].userFunction);
+                  //this.form.get('availableFunction').setValue(this.poolElements[0].userFunction);
                 }
               },
               error: error => {
@@ -223,10 +224,13 @@ export class ScheduleComponent implements OnInit {
         }
       });
   }
-  createSchedule4DateAndFunction(dateStr: string, functionStr: string): Schedule {
-    var formDate = new Date(this.form.controls[dateStr].value);
+  createSchedule4DateAndFunction(dateStr: string): Schedule {
+    var dateAndFuncStr = this.form.controls[dateStr].value;
+    const array =  dateAndFuncStr.split("/");
+
+    var formDate = new Date(array[0]/*this.form.controls[dateStr].value*/);
     var formTime = formDate.getTime();
-    var formFunction = this.form.controls[functionStr].value;
+    var formFunction = array[1]/*this.form.controls[functionStr].value*/;
 
     for (let index = 0; index < this.schedules.length; index++) {
       var scheduleDate = new Date(this.schedules[index].date);
@@ -244,7 +248,7 @@ export class ScheduleComponent implements OnInit {
       required: true,
       deleting: false,
       userAvailability: true,
-      userFunction: this.form.controls[functionStr].value
+      userFunction: formFunction/*this.form.controls[functionStr].value*/
     }
     return schedule;
   }

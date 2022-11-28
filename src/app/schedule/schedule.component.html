@@ -7,15 +7,15 @@
         <div *ngIf="!isLoggedAsAdmin">
             <div class="col">
                 <label>Date/Time</label>
-                <select #element (change)="onSelectAvailableDate($event, element)"
-                    formControlName="availableScheduledDate" class="form-select"
-                    [ngClass]="{ 'is-invalid': submitted && f['availableFunction'].errors }">
-                    <option *ngFor="let item of poolElements" [value]='item.date'>
-                        {{ item.date }}
+                <select #element 
+                    formControlName="availableSchedule4Function" class="form-select"
+                    [ngClass]="{ 'is-invalid': submitted }">
+                    <option *ngFor="let item of poolElements" >
+                        {{ item.date }}/{{ item.userFunction }}
                     </option>
                 </select>
             </div>
-            <div class="col">
+            <!--div class="col">
                 <label>Function</label>
                 <select formControlName="availableFunction" class="form-control"
                     [ngClass]="{ 'is-invalid': submitted && f['availableFunction'].errors }">
@@ -23,11 +23,11 @@
                         {{ item.userFunction }}
                     </option>
                 </select>
-            </div>
+            </div-->
         </div>
         <br>
         <button type="button" (click)="onAddAvailableSchedule()" class="btn btn-primary"
-            [ngClass]="{ 'disabled': !form.controls['availableScheduledDate'].valid}">
+            [ngClass]="{ 'disabled': !form.controls['availableSchedule4Function'].valid}">
             <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
         </button>
     </fieldset>
@@ -37,7 +37,7 @@
     <fieldset>
         <legend>Assigned Dates:</legend>
         <div class="border ">
-            <table id=scheduledTable class="table table-striped">
+            <table id=scheduledTable class="table table-fixed">
                 <thead>
                     <tr>
                         <th style="width:20%">Date/Time</th>
@@ -45,7 +45,7 @@
                         <th style="width:20%"></th>
                     </tr>
                 </thead>
-                <tbody *ngIf="schedules">
+                <tbody *ngIf="schedules.length > 0">
                     <tr *ngFor="let s of schedules">
                         <td>{{s.date}} </td>
                         <td>{{s.userFunction}} </td>
