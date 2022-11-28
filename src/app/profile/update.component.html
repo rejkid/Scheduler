@@ -1,7 +1,7 @@
 ﻿<h1>Update Profile</h1>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="row">
-        <div class="col">
+        <div class="col-5">
             <label>Title</label>
             <select formControlName="title" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['title'].errors }">
                 <option value=""></option>
@@ -30,13 +30,16 @@
         </div>
     </div>
     <div class="row">
-        <label>Email</label>
-        <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
-        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
-            <div *ngIf="f['email'].errors['required']">Email is required</div>
-            <div *ngIf="f['email'].errors['email']">Email must be a valid email address</div>
+        <div class="col-5">
+            <label>Email</label>
+            <input type="text" formControlName="email" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors['required']">Email is required</div>
+                <div *ngIf="f['email'].errors['email']">Email must be a valid email address</div>
+            </div>
         </div>
-    </div>
+        </div>
     <h3 class="pt-3">Change Password</h3>
     <p>Leave blank to keep the same password</p>
     <div class="row">

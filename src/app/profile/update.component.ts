@@ -36,10 +36,6 @@ export class UpdateComponent implements OnInit {
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
-        // this.form.get('title').disable();
-        // this.form.get('firstName').disable();
-        // this.form.get('lastName').disable();
-        // this.form.get('email').disable();
     }
 
     // convenience getter for easy access to form fields

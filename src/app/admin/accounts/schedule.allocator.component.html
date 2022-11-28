@@ -1,6 +1,6 @@
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
 
-    <div class="form-row">
+    <div class="row">
         <div class="form-group col-5">
             <label>Define schedules for {{account.firstName}}</label>
         </div>
@@ -29,7 +29,7 @@
 
     </div>
 
-    <div class="form-row" *ngIf="!isLoggedAsAdmin">
+    <div class="row" *ngIf="!isLoggedAsAdmin">
         <div class="form-group col-5">
             <label>Available Dates</label>
             <!--input type="datetime-local" formControlName="availableScheduledDate" class="form-control" -->

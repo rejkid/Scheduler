@@ -1,7 +1,7 @@
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
     <div class="border-primary">
-        <div class="form-row" *ngIf="isLoggedAsAdmin">
-            <div class="form-group col-5">
+        <div class="row" *ngIf="isLoggedAsAdmin">
+            <div class="mb-3 col-5">
                 <label>Choose Functions for {{account.firstName}}</label>
                 <select formControlName="function" class="form-select"
                     [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
@@ -32,7 +32,7 @@
                             </button>
                         </td>
                 </tbody>
-                <div class="form-group">
+                <div class="mb-3">
                     <button type="button" (click)="addFunction()" class="btn btn-primary">
                         Add Function
                     </button>
@@ -40,7 +40,7 @@
             </table>
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
     </div>
 

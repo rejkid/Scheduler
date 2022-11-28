@@ -8,7 +8,7 @@
             "name": "SWA: Run Scheduler",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:4280",
+            "url": "http://localhost:4200",
             "preLaunchTask": "swa: start Scheduler",
             "webRoot": "${workspaceFolder}/",
             "timeout": 30000
