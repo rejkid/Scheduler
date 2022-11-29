@@ -7,7 +7,11 @@ import { SchedulePoolElement } from '../_models/schedulepoolelement';
 import { UserFunction } from '../_models/userfunction';
 import { AccountService, AlertService } from '../_services';
 import { first } from 'rxjs/operators';
+import * as moment from 'moment';
+import { environment } from 'src/environments/environment';
 
+
+const dateFormat = `${environment.dateFormat}`;
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
@@ -81,7 +85,6 @@ export class ScheduleComponent implements OnInit {
 
                 this.userFunctionIndexer = account.userFunctions.length > 0 ? parseInt(account.userFunctions[account.userFunctions.length - 1].id) : 0;
 
-
                 var aDateValid = this.form.controls['availableSchedule4Function'].valid;
                 this.accountService.getAvailableSchedules(account.id)
                   .pipe(first())
@@ -90,7 +93,7 @@ export class ScheduleComponent implements OnInit {
                       this.poolElements = pollElements.schedulePoolElements;
 
                       if (this.poolElements.length != 0) {
-                        this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/"+this.poolElements[0].userFunction);
+                        this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/"+this.poolElements[0].userFunction);
                       }
 
                       this.isLoaded = true;
@@ -157,7 +160,7 @@ export class ScheduleComponent implements OnInit {
 
 
           if (this.poolElements.length != 0) {
-            this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/" + this.poolElements[0].userFunction);
+            this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
           }
           this.updateSchedulesAndPoolFromServer();
         },
@@ -188,7 +191,7 @@ export class ScheduleComponent implements OnInit {
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
-                  this.form.get('availableSchedule4Function').setValue(this.poolElements[0].date + "/" + this.poolElements[0].userFunction);
+                  this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
                 }
               },
               error: error => {
@@ -201,8 +204,8 @@ export class ScheduleComponent implements OnInit {
         }
       });
   }
-  createSchedule4DateAndFunction(dateStr: string): Schedule {
-    var dateAndFuncStr = this.form.controls[dateStr].value;
+  createSchedule4DateAndFunction(dateFormControlName: string): Schedule {
+    var dateAndFuncStr = this.form.controls[dateFormControlName].value;
     const array =  dateAndFuncStr.split("/");
 
     var formDate = new Date(array[0]);
@@ -219,9 +222,13 @@ export class ScheduleComponent implements OnInit {
       }
     }
 
+    var date = moment(formDateStr, dateFormat).toDate();
+    var zoneOffset = date.getTimezoneOffset();
+    var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
+    
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: formDateStr as any, 
+      date: localISOTime as any, 
       required: true,
       deleting: false,
       userAvailability: true,
@@ -278,7 +285,9 @@ export class ScheduleComponent implements OnInit {
       return 0
     });
   }
-
+  getDisplayDate(date: Date) : string {
+    return moment(date).format(dateFormat);
+  }
   private findScheduleIndexByScheduleId(scheduleId: string) {
     var found: number = -1;
     for (let index = 0; index < this.schedules.length; index++) {

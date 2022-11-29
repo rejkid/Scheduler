@@ -1,14 +1,21 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as moment from 'moment';
 import { first } from 'rxjs/operators';
 import { Account, Role } from 'src/app/_models';
 import { Schedule } from 'src/app/_models/schedule';
 import { SchedulePoolElement } from 'src/app/_models/schedulepoolelement';
 import { UserFunction } from 'src/app/_models/userfunction';
 import { AccountService, AlertService } from 'src/app/_services';
+import { environment } from 'src/environments/environment';
 
-@Component({ templateUrl: './schedule.allocator.component.html' })
+const dateFormat = `${environment.dateFormat}`;
+@Component({ 
+  templateUrl: './schedule.allocator.component.html',
+  styleUrls: ['./schedule.allocator.component.less']
+})
+
 
 export class ScheduleAllocatorComponent implements OnInit {
   form: FormGroup;
@@ -206,11 +213,7 @@ export class ScheduleAllocatorComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          // this.schedules = account.schedules.slice();
-          // console.log(account);
-          // this.schedules = account.schedules;
           this.assignAndSortSchedules(account);
-
         },
         error: error => {
           this.alertService.error(error);
@@ -226,6 +229,9 @@ export class ScheduleAllocatorComponent implements OnInit {
       if (a.date < b.date) return -1
       return 0
     });
+  }
+  getDisplayDate(date: Date) : string {
+    return moment(date).format(dateFormat);
   }
 
   get isAdmin() {
