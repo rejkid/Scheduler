@@ -5,7 +5,10 @@
     <thead>
         <tr>
             <th style="width:30%">Name</th>
-            <th style="width:30%">Email</th>
+            <th style="width:30%">
+                <img src="./assets/images/email.png" alt=""/>
+                Email
+            </th>
             <th style="width:30%">Role</th>
             <th style="width:10%"></th>
         </tr>
@@ -13,7 +16,8 @@
     <tbody>
         <tr *ngFor="let account of accounts">
             <td>{{account.title}} {{account.firstName}} {{account.lastName}}</td>
-            <td>{{account.email}}</td>
+            <td>{{account.email}}
+            </td>
             <td>{{account.role}}</td>
             <td style="white-space: nowrap" *ngIf="account.role !=RoleAdminEnum">
                 <a routerLink="edit/{{account.id}}" class="btn btn-sm btn-primary mr-1">Edit</a>

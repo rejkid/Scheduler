@@ -13,15 +13,6 @@
                     </option>
                 </select>
             </div>
-            <!--div class="col">
-                <label>Function</label>
-                <select formControlName="availableFunction" class="form-control"
-                    [ngClass]="{ 'is-invalid': submitted && f['availableFunction'].errors }">
-                    <option *ngFor="let item of poolElements" [value]='item.userFunction'>
-                        {{ item.userFunction }}
-                    </option>
-                </select>
-            </div-->
         </div>
         <br>
         <button type="button" (click)="onAddAvailableSchedule()" class="btn btn-primary"
