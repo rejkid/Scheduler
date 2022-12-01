@@ -144,8 +144,7 @@ export class ScheduleComponent implements OnInit {
 
     var schedule = this.createSchedule4DateAndFunction('availableSchedule4Function');
     if (schedule == null) {
-      this.alertService.warn("Function for the Date already exists");
-      return; // Function for the date already exists
+      return; 
     }
 
     this.isAdding = true;
@@ -218,6 +217,7 @@ export class ScheduleComponent implements OnInit {
       var scheduleTime = scheduleDate.getTime();
       var scheduleFunction = this.schedules[index].userFunction;
       if (scheduleTime == formTime && scheduleFunction == formFunction && this.schedules[index].userAvailability) {
+        this.alertService.warn("You are already " + scheduleFunction + " for the date/time");
         return null;
       }
     }
