@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { CheckboxControlValueAccessor, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Account, Role } from '../_models';
 import { Schedule } from '../_models/schedule';
@@ -73,7 +73,8 @@ export class ScheduleComponent implements OnInit {
                 this.functions = value;
 
                 this.form = this.formBuilder.group({
-                  availableSchedule4Function: ['',]
+                  availableSchedule4Function: ['',],
+                  allDates:[false, '',]
                 });
 
                 this.assignAndSortSchedules(account);
@@ -113,6 +114,10 @@ export class ScheduleComponent implements OnInit {
           this.alertService.error(error);
         }
       })
+  }
+
+  onCheckboxChange(event: any) {
+    this.updateSchedulesAndPoolFromServer();
   }
 
   functionValidator(control: FormControl): { [s: string]: boolean } {
@@ -277,7 +282,18 @@ export class ScheduleComponent implements OnInit {
   }
 
   assignAndSortSchedules(account: Account) {
-    this.schedules = account.schedules.slice();
+    var schedules:Schedule[] = [];
+    var d = Date.now();
+    /* Filter out values that are older then now if this.f['allDates'].value is false
+    */
+    for (let index = 0; index < account.schedules.length; index++) {
+      const element = account.schedules[index];
+      var date = Date.parse(element.date as any);
+      if(this.f['allDates'].value || date > d) {
+        schedules.push(element);
+      }
+    }
+    this.schedules = schedules.slice();
     this.schedules.sort(function (a, b) {
 
       if (a.date > b.date) return 1

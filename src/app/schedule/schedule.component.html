@@ -25,6 +25,9 @@
     <br>
     <fieldset>
         <legend>Assigned Dates:</legend>
+        <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates" name="allDates" value="">
+        <label for="allDates" class="ps-2" >All</label><br>
+
         <div class="border ">
             <table id=scheduledTable class="table table-fixed">
                 <thead>
