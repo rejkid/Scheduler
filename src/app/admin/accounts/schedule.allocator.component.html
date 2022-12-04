@@ -7,7 +7,7 @@
     </div>
     
     <fieldset>
-        <legend>Date & Function:</legend>
+        <legend>Date & Duty:</legend>
         <div class="row">
             <div class="mb-3 col">
                 <label>Date/Time</label>
@@ -15,7 +15,7 @@
     
             </div>
             <div class="mb-3 col">
-                <label>Function</label>
+                <label>Duty</label>
                 <select formControlName="function" class="form-select"
                     [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
                     <option *ngFor="let item of userFunctions" [value]='item.userFunction'>
@@ -24,7 +24,7 @@
                 </select>
     
                 <div *ngIf="submitted && form.controls['function'].hasError('invalidFunction')" class="alert alert-danger">
-                    Function can't be empty</div>
+                    Duty can't be empty</div>
             </div>
     
         </div>
@@ -36,33 +36,6 @@
         </div>
     </fieldset>
 
-    
-
-
-    <!--div class="row" *ngIf="!isLoggedAsAdmin">
-        <div class="mb-3 col-5">
-            <label>Available Dates</label>
-            
-            <select #element (change)="onSelectAvailableDate($event, element)" formControlName="availableScheduledDate"
-                class="form-control" [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
-                <option *ngFor="let item of poolElements" [value]='item.date'>
-                    {{ getDisplayDate(item.date) }}
-                </option>
-            </select>
-
-        </div>
-        <div class="mb-3 col">
-            <label>Available Function</label>
-            <select formControlName="availableFunction" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
-                <option *ngFor="let item of poolElements" [value]='item.userFunction'>
-                    {{ item.userFunction }}
-                </option>
-            </select>
-        </div>
-
-    </div-->
-
     <fieldset>
         <legend>Assigned Dates:</legend>
         <div class="border">
@@ -71,7 +44,7 @@
                     <tr>
     
                         <th style="width:20%">Date</th>
-                        <th style="width:20%">Function</th>
+                        <th style="width:20%">Duty</th>
                         <th style="width:20%"></th>
     
                     </tr>

@@ -180,7 +180,7 @@ export class ScheduleAllocatorComponent implements OnInit {
       var scheduleTime = scheduleDate.getTime();
       var scheduleFunction = this.schedules[index].userFunction;
       if (scheduleTime == formTime && scheduleFunction == formFunction) {
-        this.alertService.warn("The user is already " + scheduleFunction + " for the date/time");
+        this.alertService.warn("The user is already " + scheduleFunction + " for that date/time");
         return null;
       }
     }

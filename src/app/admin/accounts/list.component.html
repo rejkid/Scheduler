@@ -21,7 +21,7 @@
             <td>{{account.role}}</td>
             <td style="white-space: nowrap" *ngIf="account.role !=RoleAdminEnum">
                 <a routerLink="edit/{{account.id}}" class="btn btn-sm btn-primary mr-1">Edit</a>
-                <a routerLink="function/{{account.id}}" class="btn btn-sm btn-primary mr-1">Functions</a>
+                <a routerLink="function/{{account.id}}" class="btn btn-sm btn-primary mr-1">Duties</a>
                 <a routerLink="schedule/{{account.id}}" class="btn btn-sm btn-primary mr-1">Schedule</a>
                 <button (click)="deleteAccount(account.id)" class="btn btn-sm btn-danger btn-delete-account" [disabled]="account.isDeleting">
                     <span *ngIf="account.isDeleting" class="spinner-border spinner-border-sm"></span>

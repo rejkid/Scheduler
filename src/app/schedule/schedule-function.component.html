@@ -1,6 +1,6 @@
 
 <div class="mb-3 col" *ngIf="isLoaded">
-    <label>Functions of {{account.firstName}}</label>
+    <label>Duties of {{account.firstName}}</label>
 </div>
 <form [formGroup]="form" *ngIf="isLoaded && !isAdmin" class="card-body">
 
@@ -9,7 +9,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th style="width:20%">Function</th>
+                    <th style="width:20%">Duty</th>
                 </tr>
             </thead>
             <tbody *ngIf="functions">

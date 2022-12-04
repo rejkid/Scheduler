@@ -222,7 +222,7 @@ export class ScheduleComponent implements OnInit {
       var scheduleTime = scheduleDate.getTime();
       var scheduleFunction = this.schedules[index].userFunction;
       if (scheduleTime == formTime && scheduleFunction == formFunction && this.schedules[index].userAvailability) {
-        this.alertService.warn("You are already " + scheduleFunction + " for the date/time");
+        this.alertService.warn("You are already " + scheduleFunction + " for that date/time");
         return null;
       }
     }
