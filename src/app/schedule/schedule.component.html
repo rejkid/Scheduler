@@ -38,13 +38,13 @@
                     </tr>
                 </thead>
                 <tbody *ngIf="schedules.length > 0">
-                    <tr *ngFor="let s of schedules">
+                    <tr *ngFor="let s of schedules" [ngClass]="{ 'table-secondary': isScheduleFromPast(s)}">
                         <td>{{getDisplayDate(s.date)}} </td>
                         <td>{{s.userFunction}} </td>
                         <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
 
                             <button class="btn btn-sm btn-danger btn-delete-account" type="button"
-                                (click)="onDeleteSchedule($event, s.id)">
+                                (click)="onDeleteSchedule($event, s.id)" [ngClass]="{ 'disabled': isScheduleFromPast(s)}">
                                 <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
                             </button>
                         </td>

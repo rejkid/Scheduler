@@ -242,6 +242,17 @@ export class ScheduleComponent implements OnInit {
     return schedule;
   }
 
+  isScheduleFromPast(schedule: Schedule)
+  {
+    var snow = Date.now();
+    var stime = Date.parse(schedule.date as any);
+    if(stime < snow)
+    {
+      return true;
+    }
+    return false;
+  }
+
   onDeleteSchedule(event: any, scheduleId: string) { // i is schedule index
 
     var found: number = -1;
