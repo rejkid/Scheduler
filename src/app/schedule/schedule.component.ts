@@ -295,7 +295,7 @@ export class ScheduleComponent implements OnInit {
   assignAndSortSchedules(account: Account) {
     var schedules:Schedule[] = [];
     var d = Date.now();
-    /* Filter out values that are older then now if this.f['allDates'].value is false
+    /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
     */
     for (let index = 0; index < account.schedules.length; index++) {
       const element = account.schedules[index];
