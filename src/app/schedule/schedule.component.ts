@@ -21,7 +21,7 @@ export class ScheduleComponent implements OnInit {
   form: FormGroup;
   id: string;
 
-  schedules: Schedule[] = [];
+  schedules: Schedule[] = null;;
   scheduleIndexer: number = 0;
   userFunctionIndexer: number = 0;
   functions: string[] = [];
@@ -61,23 +61,25 @@ export class ScheduleComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
 
-    // Get the account for this id 
+    this.form = this.formBuilder.group({
+      availableSchedule4Function: ['',],
+      allDates:[false, '',]
+    });
+// Get the account for this id 
     this.accountService.getById(this.id)
       .pipe(first())
       .subscribe({
         next: (account) => {
+
           this.accountService.getRoles()
             .pipe(first())
             .subscribe({
               next: (value) => {
                 this.functions = value;
 
-                this.form = this.formBuilder.group({
-                  availableSchedule4Function: ['',],
-                  allDates:[false, '',]
-                });
-
                 this.assignAndSortSchedules(account);
+
+                this.isLoaded = true;
 
                 this.userFunctions = account.userFunctions.slice();
 
@@ -97,7 +99,6 @@ export class ScheduleComponent implements OnInit {
                         this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/"+this.poolElements[0].userFunction);
                       }
 
-                      this.isLoaded = true;
                     },
                     error: error => {
                       this.alertService.error(error);

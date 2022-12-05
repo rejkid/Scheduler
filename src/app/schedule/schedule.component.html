@@ -1,7 +1,7 @@
 <div class="mb-3 col" *ngIf="isLoaded">
     <label>Schedules for {{account.firstName}}</label>
 </div>
-<form [formGroup]="form" *ngIf="isLoaded && !isAdmin">
+<form [formGroup]="form">
     <fieldset>
         <legend>Available Dates:</legend>
         <div *ngIf="!isLoggedAsAdmin">
@@ -25,8 +25,9 @@
     <br>
     <fieldset>
         <legend>Assigned Dates:</legend>
-        <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates" name="allDates" value="">
-        <label for="allDates" class="ps-2" >All</label><br>
+        <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates"
+            name="allDates" value="">
+        <label for="allDates" class="ps-2">All</label><br>
 
         <div class="border ">
             <table id=scheduledTable class="table table-fixed">
@@ -37,20 +38,21 @@
                         <th style="width:20%"></th>
                     </tr>
                 </thead>
-                <tbody *ngIf="schedules.length > 0">
+                <tbody>
                     <tr *ngFor="let s of schedules" [ngClass]="{ 'table-secondary': isScheduleFromPast(s)}">
                         <td>{{getDisplayDate(s.date)}} </td>
                         <td>{{s.userFunction}} </td>
                         <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
 
                             <button class="btn btn-sm btn-danger btn-delete-account" type="button"
-                                (click)="onDeleteSchedule($event, s.id)" [ngClass]="{ 'disabled': isScheduleFromPast(s)}">
+                                (click)="onDeleteSchedule($event, s.id)"
+                                [ngClass]="{ 'disabled': isScheduleFromPast(s)}">
                                 <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
                             </button>
                         </td>
                     </tr>
 
-                    <tr *ngIf="!isLoaded">
+                    <tr *ngIf="!schedules">
                         <td colspan="4" class="text-center">
                             <span class="spinner-border spinner-border-lg align-center"></span>
                         </td>
