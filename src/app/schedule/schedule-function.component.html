@@ -1,10 +1,7 @@
-
 <div class="mb-3 col" *ngIf="isLoaded">
     <label>Duties of {{account.firstName}}</label>
 </div>
-<form [formGroup]="form" *ngIf="isLoaded && !isAdmin" class="card-body">
-
-
+<form [formGroup]="form" class="card-body">
     <div class="border border-primary">
         <table class="table table-striped">
             <thead>
@@ -15,15 +12,17 @@
             <tbody *ngIf="functions">
                 <tr *ngFor="let s of userFunctions">
                     <td>{{s.userFunction}} </td>
-
+                </tr>
+                <tr *ngIf="!userFunctions">
+                    <td colspan="4" class="text-center">
+                        <span class="spinner-border spinner-border-lg align-center"></span>
+                    </td>
+                </tr>
             </tbody>
-
         </table>
     </div>
     <!--/div-->
     <div class="mb-3">
-
         <a routerLink="/schedule" class="btn btn-link">Back</a>
     </div>
-
 </form>

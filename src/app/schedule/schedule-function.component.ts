@@ -13,11 +13,10 @@ export class ScheduleFunctionComponent implements OnInit {
   form: FormGroup;
   userFunctionIndexer: number = 0;
 
-  userFunctions: UserFunction[] = [];
+  userFunctions: UserFunction[] = null;
   functions: string[] = [];
   submitted = false;
   isLoggedAsAdmin: boolean = false;
-  loading = false;
 
   isLoaded: boolean = false;
   constructor(private accountService: AccountService,
@@ -29,32 +28,29 @@ export class ScheduleFunctionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.form = this.formBuilder.group({
+      function: ['', [Validators.required, this.functionValidator]],
+    });
+
     this.id = this.route.snapshot.params['id'];
     this.accountService.getById(this.id)
       .pipe(first())
       .subscribe({
-        next: (account) => {
-          this.accountService.getRoles()
+          next: (account) => {
+            this.account = account;
+            this.isLoaded = true;
+            this.accountService.getRoles()
             .pipe(first())
             .subscribe({
               next: (value: any) => {
                 this.functions = value;
 
-                this.account = account;
                 this.userFunctions = account.userFunctions.slice();
 
                 console.log(this.account + this.id);
-                this.form = this.formBuilder.group({
-
-                  function: ['', [Validators.required, this.functionValidator]],
-
-                });
                 this.form.get('function').setValue(this.functions[0]);
 
                 this.userFunctionIndexer = account.userFunctions.length > 0 ? parseInt(account.userFunctions[account.userFunctions.length - 1].id) : 0;
-
-                this.isLoaded = true;
-
               },
               error: error => {
                 this.alertService.error(error);
