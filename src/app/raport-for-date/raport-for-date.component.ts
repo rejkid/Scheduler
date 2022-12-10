@@ -56,8 +56,7 @@ export class RaportForDateComponent implements OnInit {
     
     var locTime = moment(this.dateSelected, dateFormat).toISOString();
     var localISOTime = TimeHandler.displayStr2LocalIsoString(this.dateSelected, dateFormat);
-
-    this.accountService.GetTeamsByFunctionForDate(locTime)
+    this.accountService.GetTeamsByFunctionForDate(/*locTime*/localISOTime)
       .pipe(first())
       .subscribe({
         next: (dateFunctionTeams: DateFunctionTeams) => {
