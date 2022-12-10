@@ -1,30 +1,31 @@
-<!--div id="designer-host"><gc-activereports-designer [report]="report"> </gc-activereports-designer></div-->
 <div class="p-4">
     <div class="container">
-        <form [formGroup]="form" *ngIf="isLoaded">
-
-            <div class="mb-3">
-                <label for="dates">Dates:</label>
-                <select #dates formControlName="dates" class="form-select" (change)="onSelected(dates.value)">
-
-                    <option>Choose Date</option>
-                    <option *ngFor="let date of list">{{date}}</option>
-                </select>
-                <div *ngIf="f.dates.dirty && f.dates.hasError('invalidDate')" class="alert alert-danger">Date must be
-                    valid
+        <form [formGroup]="form">
+            <!--fieldset>
+                <legend>Dates</legend-->
+                <div class="mb-3">
+                    <label for="dates" class="me-2">Dates:</label>
+                    <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates"
+                        name="allDates" value="" class="ms-5">
+                    <label for="allDates" class="ps-2">All</label><br>
+                    <select #dates formControlName="dates" class="form-select" (ngModelChange)="onSelected($event)">
+                        <option *ngFor="let date of latesetList">{{date}}</option>
+                    </select>
+                    <div *ngIf="f['dates'].dirty && f['dates'].hasError('invalidDate')" class="alert alert-danger">Date must be
+                        valid
+                    </div>
                 </div>
-            </div>
+            <!--/fieldset-->
 
             <fieldset *ngFor="let team of teams">
                 <legend>{{team.function}} Users:</legend>
                 <div class="border border-primary">
-            
+
                     <table id=scheduledTable class="table table-striped">
                         <thead>
                             <tr>
                                 <th style="width:30%">Duty</th>
                                 <th style="width:30%">User</th>
-                                <!--th style="width:30%">UserAvailability</th-->
                                 <th style="width:10%"></th>
                             </tr>
                         </thead>
@@ -35,11 +36,8 @@
                             </tr>
                         </tbody>
                     </table>
-            
-            
                 </div>
             </fieldset>
-        
         </form>
     </div>
 </div>

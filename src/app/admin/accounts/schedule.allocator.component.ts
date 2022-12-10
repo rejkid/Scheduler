@@ -117,20 +117,21 @@ export class ScheduleAllocatorComponent implements OnInit {
     return null;
   }
 
-  onSelectAvailableDate(event: any, element: { value: string | number | Date; }) {
-    var date = element.value;
-    for (let index = 0; index < this.poolElements.length; index++) {
-      //const element = this.poolElements[index];
+  // onSelectAvailableDate(event: any, element: { value: string | number | Date; }) {
+  //   var date = element.value;
+  //   for (let index = 0; index < this.poolElements.length; index++) {
+  //     //const element = this.poolElements[index];
 
-      var poolDate = new Date(this.poolElements[index].date);
-      var selectedDate = new Date(element.value);
-      if (poolDate.getTime() == selectedDate.getTime()) {
-        var func = this.poolElements[index].userFunction;
-        this.form.get('availableFunction').setValue(this.poolElements[index].userFunction);
+  //     var poolDate = new Date(this.poolElements[index].date);
+  //     var selectedDate = new Date(element.value);
+  //     if (poolDate.getTime() == selectedDate.getTime()) {
+  //       var func = this.poolElements[index].userFunction;
+  //       this.form.get('availableFunction').setValue(this.poolElements[index].userFunction);
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
+  
   // convenience getter for easy access to form fields
   get f() { return this.form.controls; }
 

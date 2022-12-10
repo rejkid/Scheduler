@@ -5,15 +5,22 @@ import { DateFunctionTeams } from '../_models/teams';
 import { User } from '../_models/user';
 import { AccountService } from '../_services';
 import { first } from 'rxjs/operators';
+import { TimeHandler } from '../_helpers/time.handler';
+import { environment } from 'src/environments/environment';
+import * as moment from 'moment';
+import { ScheduleDateTimes } from '../_models/scheduledatetimes';
 
+const dateFormat = `${environment.dateFormat}`;
 @Component({
   selector: 'app-raport-test',
   templateUrl: './raport-for-date.component.html',
   styleUrls: ['./raport-for-date.component.less']
 })
 export class RaportForDateComponent implements OnInit {
+  form: FormGroup;
   list: Date[] = [];
-  
+  latesetList: string[] = [];
+
   dateSelected: string;
   isLoaded: boolean = false;
 
@@ -21,51 +28,36 @@ export class RaportForDateComponent implements OnInit {
   users: User[] = [];
   teams: Team[] = [];
 
-  form = new FormGroup({
-    dates: new FormControl('', Validators.required)
-  });
-
   constructor(private accountService: AccountService,
     private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
-    this.accountService.getAllDates()
-      .pipe(first())
-      .subscribe({
-        next: (value) => {
-          this.form = this.formBuilder.group({
-            dates: ['', [Validators.required, this.dateValidator]],
-          });
-
-          for (let index = 0; index < value.scheduleDateTimes.length; index++) {
-            this.list.push(value.scheduleDateTimes[index].date)
-          }
-          this.list.sort(function (a, b) {
-
-            if (a > b) return 1
-            if (a < b) return -1
-            return 0
-          });
-
-          this.isLoaded = true;
-        },
-        error: error => {
-          console.log();
-        }
-      });
+    this.form = this.formBuilder.group({
+      dates: ['', [Validators.required, this.dateValidator]],
+      allDates: [false, '',]
+    });
+    this.getAllDates();
   }
+  onCheckboxChange(event: any) {
+    this.getAllDates();
+  }
+
   get f() {
     return this.form.controls;
   }
 
-  onSelected(value: string): void {
+  onSelected(value: any): void {
     this.dateSelected = value;
-    if (this.dateSelected == "Choose Date")
+    if (this.latesetList.length <= 0 )
       return;
 
     this.users = [];
-    this.accountService.GetTeamsByFunctionForDate(this.dateSelected)
+    
+    var locTime = moment(this.dateSelected, dateFormat).toISOString();
+    var localISOTime = TimeHandler.displayStr2LocalIsoString(this.dateSelected, dateFormat);
+
+    this.accountService.GetTeamsByFunctionForDate(locTime)
       .pipe(first())
       .subscribe({
         next: (dateFunctionTeams: DateFunctionTeams) => {
@@ -87,6 +79,48 @@ export class RaportForDateComponent implements OnInit {
       });
 
   }
+
+  getAllDates() {
+    this.latesetList = [];
+    this.list = [];
+    this.accountService.getAllDates()
+      .pipe(first())
+      .subscribe({
+        next: (value : ScheduleDateTimes) => {
+
+          for (let index = 0; index < value.scheduleDateTimes.length; index++) {
+            this.list.push(value.scheduleDateTimes[index].date)
+          }
+          this.list.sort(function (a, b) {
+
+            if (a > b) return 1
+            if (a < b) return -1
+            return 0
+          });
+          for (let index = 0; index < this.list.length; index++) {
+            const element = this.list[index];
+            var tnow = Date.now();
+            var tElement = Date.parse(element as any);
+            if (this.f['allDates'].value || tElement > tnow) {
+              this.latesetList.push(this.getDateDisplayStr(element));
+            }
+          }
+          if (this.latesetList.length > 0) {
+            this.form.get('dates').setValue(this.latesetList.at(0));
+          }
+
+          this.isLoaded = true;
+        },
+        error: error => {
+          console.log();
+        }
+      });
+
+  }
+  getDateDisplayStr(date: Date): string {
+    return TimeHandler.getDateDisplayStrFromFormat(date, dateFormat)
+  }
+
   dateValidator(control: FormControl): { [s: string]: boolean } {
     var test = control.value.match(/^\d/);
     if (!test) {

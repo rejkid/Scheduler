@@ -9,6 +9,7 @@ import { AccountService, AlertService } from '../_services';
 import { first } from 'rxjs/operators';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
+import { TimeHandler } from '../_helpers/time.handler';
 
 
 const dateFormat = `${environment.dateFormat}`;
@@ -63,9 +64,9 @@ export class ScheduleComponent implements OnInit {
 
     this.form = this.formBuilder.group({
       availableSchedule4Function: ['',],
-      allDates:[false, '',]
+      allDates: [false, '',]
     });
-// Get the account for this id 
+    // Get the account for this id 
     this.accountService.getById(this.id)
       .pipe(first())
       .subscribe({
@@ -96,7 +97,7 @@ export class ScheduleComponent implements OnInit {
                       this.poolElements = pollElements.schedulePoolElements;
 
                       if (this.poolElements.length != 0) {
-                        this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/"+this.poolElements[0].userFunction);
+                        this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
                       }
 
                     },
@@ -150,7 +151,7 @@ export class ScheduleComponent implements OnInit {
 
     var schedule = this.createSchedule4DateAndFunction('availableSchedule4Function');
     if (schedule == null) {
-      return; 
+      return;
     }
 
     this.isAdding = true;
@@ -165,7 +166,7 @@ export class ScheduleComponent implements OnInit {
 
 
           if (this.poolElements.length != 0) {
-            this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+            this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
           }
           this.updateSchedulesAndPoolFromServer();
         },
@@ -196,7 +197,7 @@ export class ScheduleComponent implements OnInit {
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
-                  this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+                  this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
                 }
               },
               error: error => {
@@ -211,7 +212,7 @@ export class ScheduleComponent implements OnInit {
   }
   createSchedule4DateAndFunction(dateFormControlName: string): Schedule {
     var dateAndFuncStr = this.form.controls[dateFormControlName].value;
-    const array =  dateAndFuncStr.split("/");
+    const array = dateAndFuncStr.split("/");
 
     var formDate = new Date(array[0]);
     var formDateStr = array[0];
@@ -228,13 +229,11 @@ export class ScheduleComponent implements OnInit {
       }
     }
 
-    var date = moment(formDateStr, dateFormat).toDate();
-    var zoneOffset = date.getTimezoneOffset();
-    var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
-    
+    var localISOTime = TimeHandler.displayStr2LocalIsoString(formDateStr, dateFormat);
+
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: localISOTime as any, 
+      date: localISOTime as any,
       required: true,
       deleting: false,
       userAvailability: true,
@@ -243,12 +242,10 @@ export class ScheduleComponent implements OnInit {
     return schedule;
   }
 
-  isScheduleFromPast(schedule: Schedule)
-  {
+  isScheduleFromPast(schedule: Schedule) {
     var snow = Date.now();
     var stime = Date.parse(schedule.date as any);
-    if(stime < snow)
-    {
+    if (stime < snow) {
       return true;
     }
     return false;
@@ -294,14 +291,14 @@ export class ScheduleComponent implements OnInit {
   }
 
   assignAndSortSchedules(account: Account) {
-    var schedules:Schedule[] = [];
+    var schedules: Schedule[] = [];
     var d = Date.now();
     /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
     */
     for (let index = 0; index < account.schedules.length; index++) {
       const element = account.schedules[index];
       var date = Date.parse(element.date as any);
-      if(this.f['allDates'].value || date > d) {
+      if (this.f['allDates'].value || date > d) {
         schedules.push(element);
       }
     }
@@ -313,9 +310,11 @@ export class ScheduleComponent implements OnInit {
       return 0
     });
   }
-  getDisplayDate(date: Date) : string {
-    return moment(date).format(dateFormat);
+
+  getDateDisplayStr(date: Date): string {
+    return TimeHandler.getDateDisplayStrFromFormat(date, dateFormat)
   }
+
   private findScheduleIndexByScheduleId(scheduleId: string) {
     var found: number = -1;
     for (let index = 0; index < this.schedules.length; index++) {

@@ -9,7 +9,7 @@
                 <label>Date/Time</label>
                 <select #element formControlName="availableSchedule4Function" class="form-select">
                     <option *ngFor="let item of poolElements">
-                        {{ getDisplayDate(item.date) }}/{{ item.userFunction }}
+                        {{ getDateDisplayStr(item.date) }}/{{ item.userFunction }}
                     </option>
                 </select>
             </div>
@@ -40,7 +40,7 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let s of schedules" [ngClass]="{ 'table-secondary': isScheduleFromPast(s)}">
-                        <td>{{getDisplayDate(s.date)}} </td>
+                        <td>{{getDateDisplayStr(s.date)}} </td>
                         <td>{{s.userFunction}} </td>
                         <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
 
