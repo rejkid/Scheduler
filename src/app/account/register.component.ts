@@ -5,6 +5,8 @@ import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
+import { TimeHandler } from '../_helpers/time.handler';
+import * as moment from 'moment';
 
 @Component({ templateUrl: 'register.component.html' })
 export class RegisterComponent implements OnInit {
@@ -26,12 +28,15 @@ export class RegisterComponent implements OnInit {
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
+            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
             password: ['', [Validators.required, Validators.minLength(6)]],
             confirmPassword: ['', Validators.required],
             acceptTerms: [false, Validators.requiredTrue]
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
+
+        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
     }
 
     // convenience getter for easy access to form fields

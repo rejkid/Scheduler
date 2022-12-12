@@ -43,6 +43,14 @@
             </div>
         </div>
     </div>
+    <div class="mb-3 row">
+        <div class="col-4">
+            <label>DOB</label>
+            <!--input type="date" formControlName="dob" class="form-control"-->
+            <input type="date" formControlName="dob" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
+        </div>
+    </div>
     <h3 class="pt-3">Change Password</h3>
     <p>Leave blank to keep the same password</p>
     <div class="row">

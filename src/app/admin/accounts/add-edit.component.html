@@ -57,7 +57,19 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-4">
+            <label>DOB</label>
+            <input type="date" formControlName="dob" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
+            <div *ngIf="submitted && f['dob'].errors" class="invalid-feedback">
+                <div *ngIf="f['dob'].errors['required']">DOB is required</div>
+                <div *ngIf="f['dob'].errors['dob']">DOB is invalid</div>
+            </div>
     
+        </div>
+    </div>
+
     <div *ngIf="!isAddMode">
         <h3 class="pt-3">Change Password</h3>
         <p>Leave blank to keep the same password</p>

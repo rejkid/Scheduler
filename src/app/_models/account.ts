@@ -13,6 +13,7 @@ export class Account {
     userFunctions: UserFunction[] = [];
     jwtToken?: string;
     date: Date;
+    dob: Date;
     availability: boolean;
     password: string;
     confirmPassword : string

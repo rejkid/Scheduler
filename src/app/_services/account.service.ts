@@ -38,8 +38,8 @@ export class AccountService {
         return this.accountSubject.value;
     }
 
-    login(email: string, password: string) {
-        return this.http.post<Account>(`${baseUrl}/authenticate`, { email, password }, { withCredentials: true })
+    login(email: string, password: string, dob: string) {
+        return this.http.post<Account>(`${baseUrl}/authenticate`, { email, password, dob }, { withCredentials: true })
             .pipe(map(account => {
                 //const body = account.body;
                 this.accountSubject.next(account);
@@ -72,16 +72,16 @@ export class AccountService {
         return this.http.post(`${baseUrl}/register`, account);
     }
 
-    verifyEmail(token: string) {
-        return this.http.post(`${baseUrl}/verify-email`, { token });
+    verifyEmail(token: string, dob : string ) {
+        return this.http.post(`${baseUrl}/verify-email`, { token, dob });
     }
 
-    forgotPassword(email: string) {
-        return this.http.post(`${baseUrl}/forgot-password`, { email });
+    forgotPassword(email: string, dob : string) {
+        return this.http.post(`${baseUrl}/forgot-password`, { email, dob });
     }
 
-    validateResetToken(token: string) {
-        return this.http.post(`${baseUrl}/validate-reset-token`, { token });
+    validateResetToken(token: string, dob : string) {
+        return this.http.post(`${baseUrl}/validate-reset-token`, { token, dob });
     }
 
     resetPassword(token: string, password: string, confirmPassword: string) {

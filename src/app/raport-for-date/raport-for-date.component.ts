@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { ScheduleDateTimes } from '../_models/scheduledatetimes';
 
-const dateFormat = `${environment.dateFormat}`;
+
 @Component({
   selector: 'app-raport-test',
   templateUrl: './raport-for-date.component.html',
@@ -54,8 +54,8 @@ export class RaportForDateComponent implements OnInit {
 
     this.users = [];
     
-    var locTime = moment(this.dateSelected, dateFormat).toISOString();
-    var localISOTime = TimeHandler.displayStr2LocalIsoString(this.dateSelected, dateFormat);
+    //var locTime = moment(this.dateSelected, dateFormat).toISOString();
+    var localISOTime = TimeHandler.displayStr2LocalIsoString(this.dateSelected);
     this.accountService.GetTeamsByFunctionForDate(/*locTime*/localISOTime)
       .pipe(first())
       .subscribe({
@@ -117,7 +117,7 @@ export class RaportForDateComponent implements OnInit {
 
   }
   getDateDisplayStr(date: Date): string {
-    return TimeHandler.getDateDisplayStrFromFormat(date, dateFormat)
+    return TimeHandler.getDateDisplayStrFromFormat(date)
   }
 
   dateValidator(control: FormControl): { [s: string]: boolean } {

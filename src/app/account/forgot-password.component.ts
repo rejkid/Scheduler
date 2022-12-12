@@ -1,6 +1,8 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as moment from 'moment';
 import { first, finalize } from 'rxjs/operators';
+import { TimeHandler } from '../_helpers/time.handler';
 
 import { AccountService, AlertService } from '../_services';
 
@@ -18,8 +20,10 @@ export class ForgotPasswordComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            email: ['', [Validators.required, Validators.email]]
+            email: ['', [Validators.required, Validators.email]],
+            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
         });
+        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
     }
 
     // convenience getter for easy access to form fields
@@ -38,7 +42,7 @@ export class ForgotPasswordComponent implements OnInit {
 
         this.loading = true;
         this.alertService.clear();
-        this.accountService.forgotPassword(this.f['email'].value)
+        this.accountService.forgotPassword(this.f['email'].value, this.f['dob'].value)
             .pipe(first())
             .pipe(finalize(() => this.loading = false))
             .subscribe({

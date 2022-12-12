@@ -13,6 +13,8 @@ import { AccountService, AlertService } from 'src/app/_services';
 import { UserFunction } from 'src/app/_models/userfunction';
 import { Account, Role } from 'src/app/_models';
 import { MustMatch } from 'src/app/_helpers';
+import { TimeHandler } from 'src/app/_helpers/time.handler';
+import * as moment from 'moment';
 
 @Component({ templateUrl: 'add-edit.component.html' })
 export class AddEditComponent implements OnInit {
@@ -41,7 +43,9 @@ export class AddEditComponent implements OnInit {
         this.userFunctions = functions;
     }
 
-
+    getDateDisplayStr(date: Date): string {
+        return TimeHandler.getDateDisplayStrFromFormat(date)
+      }
     ngOnInit() {
         this.id = this.route.snapshot.params['id'];
         this.isAddMode = !this.id;
@@ -59,11 +63,14 @@ export class AddEditComponent implements OnInit {
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             role: ['' , Validators.required],
+            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
             password: ['', [Validators.minLength(6), this.isAddMode ? Validators.required : Validators.nullValidator]],
             confirmPassword: ['']
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
+
+        
 
         if (!this.isAddMode) {
             this.accountService.getById(this.id)
@@ -71,15 +78,14 @@ export class AddEditComponent implements OnInit {
                 .subscribe(x => {
                     this.account =  x; // initial account
                     this.form.patchValue(x)
+                    this.form.get('dob').setValue(moment(this.account.dob).format('YYYY-MM-DD'));
                 });
         }
 
         // Set the first available role
         this.form.get('role').setValue(this.roles[0]);
     }
-
-
-
+      
     // convenience getter for easy access to form fields
     get f() { return this.form.controls; }
 

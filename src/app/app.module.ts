@@ -1,6 +1,6 @@
 ﻿import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // used to create fake backend
@@ -19,16 +19,25 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FloatingSchedulesComponent } from './floating-schedules/floating-schedules.component';
 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MaterialModule } from './material.module';
+
 
 
 @NgModule({
     imports: [
         CommonModule,
         BrowserModule,
+        FormsModule,
+        HttpClientModule,
         ReactiveFormsModule,
         HttpClientModule,
         AppRoutingModule,
-        RouterModule
+        RouterModule,
+        BrowserAnimationsModule,
+        MatNativeDateModule,
+        MaterialModule,
         
     ],
     declarations: [

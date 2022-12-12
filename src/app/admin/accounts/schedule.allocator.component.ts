@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { first } from 'rxjs/operators';
+import { TimeHandler } from 'src/app/_helpers/time.handler';
 import { Account, Role } from 'src/app/_models';
 import { Schedule } from 'src/app/_models/schedule';
 import { SchedulePoolElement } from 'src/app/_models/schedulepoolelement';
@@ -174,6 +175,7 @@ export class ScheduleAllocatorComponent implements OnInit {
   createSchedule(dateStr: string, functionStr: string): Schedule {
     var formDate = new Date(this.form.controls[dateStr].value);
     var formTime = formDate.getTime();
+
     var formFunction = this.form.controls[functionStr].value;
 
     for (let index = 0; index < this.schedules.length; index++) {

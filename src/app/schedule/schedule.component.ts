@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
 
 
-const dateFormat = `${environment.dateFormat}`;
+
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
@@ -214,22 +214,22 @@ export class ScheduleComponent implements OnInit {
     var dateAndFuncStr = this.form.controls[dateFormControlName].value;
     const array = dateAndFuncStr.split("/");
 
-    var formDate = new Date(array[0]);
+    var dateTimeStr = TimeHandler.displayStr2LocalIsoString(array[0]);
+    var formDate = Date.parse(dateTimeStr);
     var formDateStr = array[0];
-    var formTime = formDate.getTime();
     var formFunction = array[1];
 
     for (let index = 0; index < this.schedules.length; index++) {
       var scheduleDate = new Date(this.schedules[index].date);
       var scheduleTime = scheduleDate.getTime();
       var scheduleFunction = this.schedules[index].userFunction;
-      if (scheduleTime == formTime && scheduleFunction == formFunction && this.schedules[index].userAvailability) {
+      if (scheduleTime == formDate && scheduleFunction == formFunction) {
         this.alertService.warn("You are already " + scheduleFunction + " for that date/time");
         return null;
       }
     }
 
-    var localISOTime = TimeHandler.displayStr2LocalIsoString(formDateStr, dateFormat);
+    var localISOTime = TimeHandler.displayStr2LocalIsoString(formDateStr);
 
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
@@ -312,7 +312,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   getDateDisplayStr(date: Date): string {
-    return TimeHandler.getDateDisplayStrFromFormat(date, dateFormat)
+    return TimeHandler.getDateDisplayStrFromFormat(date)
   }
 
   private findScheduleIndexByScheduleId(scheduleId: string) {

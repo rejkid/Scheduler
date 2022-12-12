@@ -1,9 +1,11 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '../_services';
+import * as moment from 'moment';
+import { TimeHandler } from '../_helpers/time.handler';
 
 @Component({ templateUrl: 'login.component.html' })
 export class LoginComponent implements OnInit {
@@ -22,13 +24,15 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         this.form = this.formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
-            password: ['', Validators.required]
+            password: ['', Validators.required],
+            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
         });
+        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
     }
-
+    
     // convenience getter for easy access to form fields
-    get f() { return this.form.controls; }
-
+    get f() { return this.form.controls; }  
+      
     onSubmit() {
         this.submitted = true;
 
@@ -41,7 +45,7 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.login(this.f['email'].value, this.f['password'].value)
+        this.accountService.login(this.f['email'].value, this.f['password'].value, this.f['dob'].value)
             .pipe(first())
             .subscribe({
                 next: () => {

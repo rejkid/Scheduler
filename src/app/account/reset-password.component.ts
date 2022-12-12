@@ -5,6 +5,8 @@ import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
+import { TimeHandler } from '../_helpers/time.handler';
+import * as moment from 'moment';
 
 enum TokenStatus {
     Validating,
@@ -33,16 +35,21 @@ export class ResetPasswordComponent implements OnInit {
         this.form = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6)]],
             confirmPassword: ['', Validators.required],
+            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
 
         const token = this.route.snapshot.queryParams['token'];
+        const dob = this.route.snapshot.queryParams['DOB'];
+
+        console.log("token=" + token)
+        console.log("DOB=" + dob)
 
         // remove token from url to prevent http referer leakage
         this.router.navigate([], { relativeTo: this.route, replaceUrl: true });
 
-        this.accountService.validateResetToken(token)
+        this.accountService.validateResetToken(token, dob)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -53,6 +60,7 @@ export class ResetPasswordComponent implements OnInit {
                     this.tokenStatus = TokenStatus.Invalid;
                 }
             });
+            this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
     }
 
     // convenience getter for easy access to form fields
