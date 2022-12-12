@@ -20,8 +20,7 @@ import { RouterModule } from '@angular/router';
 import { FloatingSchedulesComponent } from './floating-schedules/floating-schedules.component';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MaterialModule } from './material.module';
+
 
 
 
@@ -36,8 +35,8 @@ import { MaterialModule } from './material.module';
         AppRoutingModule,
         RouterModule,
         BrowserAnimationsModule,
-        MatNativeDateModule,
-        MaterialModule,
+        
+        
         
     ],
     declarations: [

@@ -9,11 +9,7 @@ import { ListComponent } from './list.component';
 import { AddEditComponent } from './add-edit.component';
 import { FunctionComponent } from './function.component';
 import { ScheduleAllocatorComponent } from './schedule.allocator.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRippleModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MaterialModule } from 'src/app/material.module';
+
 
 @NgModule({
     imports: [
@@ -21,7 +17,7 @@ import { MaterialModule } from 'src/app/material.module';
         ReactiveFormsModule,
         AccountsRoutingModule,
         ScheduleModule,
-        MaterialModule,
+        
     ],
     declarations: [
         ListComponent,
