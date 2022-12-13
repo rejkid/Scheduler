@@ -2,7 +2,7 @@
 <h1 *ngIf="!isAddMode">Edit Account</h1>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="row">
-        <div class="col">
+        <div class="col-4">
             <label>Title</label>
             <select formControlName="title" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['title'].errors }">
                 <option value=""></option>
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="mb-3 col">
+        <div class="mb-3 col-7">
             <label>Email</label>
             <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
             <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
