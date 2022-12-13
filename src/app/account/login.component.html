@@ -11,19 +11,20 @@
                     <div *ngIf="f['email'].errors['email']">Email is invalid</div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="mb-3">
-                    <label>DOB</label>
-                    <input type="date" formControlName="dob" class="form-control"
-                        [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
-                    <div *ngIf="submitted && f['dob'].errors" class="invalid-feedback">
-                        <div *ngIf="f['dob'].errors['required']">DOB is required</div>
-                        <div *ngIf="f['dob'].errors['dob']">DOB is invalid</div>
-                    </div>
+        </div>
+        
+        <div class="row">
+            <div class="mb-3">
+                <label>DOB</label>
+                <input type="date" formControlName="dob" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
+                <div *ngIf="submitted && f['dob'].errors" class="invalid-feedback">
+                    <div *ngIf="f['dob'].errors['required']">DOB is required</div>
+                    <div *ngIf="f['dob'].errors['dob']">DOB is invalid</div>
                 </div>
             </div>
-    
+        </div>
+        <div class="row">
             <div class="mb-3">
                 <label>Password</label>
                 <input type="password" formControlName="password" class="form-control"
