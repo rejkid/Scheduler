@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="mb-3 col-9">
+        <div class="mb-3 col-12">
             <label>Email</label>
             <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
             <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
@@ -39,6 +39,8 @@
                 <div *ngIf="f['email'].errors['email']">Email must be a valid email address</div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col">
             <label>Role</label>
             <!--option *ngFor="let item of options" [value]="item.year">
@@ -58,7 +60,7 @@
     </div>
 
     <div class="row">
-        <div class="col-6">
+        <div class="col-12">
             <label>DOB</label>
             <input type="date" formControlName="dob" class="form-control"
                 [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
