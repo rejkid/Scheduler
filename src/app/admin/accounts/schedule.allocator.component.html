@@ -9,12 +9,12 @@
     <fieldset>
         <legend>Date & Duty:</legend>
         <div class="row">
-            <div class="mb-3 col">
+            <div class="mb-3 col-12">
                 <label>Date/Time</label>
                 <input type="datetime-local" formControlName="scheduledDate" class="form-control">
     
             </div>
-            <div class="mb-3 col">
+            <div class="mb-3 col-12">
                 <label>Duty</label>
                 <select formControlName="function" class="form-select"
                     [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
