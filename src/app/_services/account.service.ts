@@ -113,6 +113,19 @@ export class AccountService {
     addSchedule(id: any, schedule: any) {
         return this.http.put<Account>(`${baseUrl}/add-schedule/${id}`, schedule);
     }
+    updateSchedule(schedule: any) {
+        return this.http.post(`${baseUrl}/update-schedule`, schedule)
+            .pipe(map((account: any) => {
+                // update the current account if it was updated
+                if (account.id === this.accountValue.id) {
+                    // publish updated account to subscribers
+                    account = { ...this.accountValue, ...account };
+                    this.accountSubject.next(account);
+                }
+                return account;
+            }));
+    }
+
     deleteSchedule(id: any, schedule: any) {
         return this.http.post<Account>(`${baseUrl}/delete-schedule/${id}`, schedule);
     }
@@ -153,20 +166,6 @@ export class AccountService {
                 return account;
             }));
     }
-    updateSchedule(schedule: any) {
-        //return this.http.post(`${baseUrl}/${id}`, schedule)
-        return this.http.post(`${baseUrl}/update-schedule`, schedule)
-            .pipe(map((account: any) => {
-                // update the current account if it was updated
-                if (account.id === this.accountValue.id) {
-                    // publish updated account to subscribers
-                    account = { ...this.accountValue, ...account };
-                    this.accountSubject.next(account);
-                }
-                return account;
-            }));
-    }
-
     delete(id: string) {
         return this.http.delete(`${baseUrl}/${id}`)
             .pipe(finalize(() => {

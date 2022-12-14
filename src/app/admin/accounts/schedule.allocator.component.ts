@@ -234,7 +234,7 @@ export class ScheduleAllocatorComponent implements OnInit {
     });
   }
   getDisplayDate(date: Date) : string {
-    return moment(date).format(dateFormat);
+    return TimeHandler.getDateDisplayStrFromFormat(date);
   }
 
   get isAdmin() {

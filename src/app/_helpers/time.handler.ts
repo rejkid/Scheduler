@@ -19,27 +19,16 @@ export class TimeHandler {
         }
         return null;
     }
-    // static getLocalIsoString(): string {
-    //     var date = moment.calendarFormat();
-    //     var zoneOffset = date.getTimezoneOffset();
-    //     var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
-    //     return localISOTime.replace("Z", "");
-    //     //return moment.defaultFormat;
-    // }
-    static displayStr2LocalIsoString(formDateStr: string): string {
-        var date = moment(formDateStr, dateFormat).toDate();
+    static displayStr2LocalIsoString(dateStr: string): string {
+        var date = moment(dateStr, dateFormat).toDate();
         var zoneOffset = date.getTimezoneOffset();
         var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
         return localISOTime.replace("Z", "");
     }
-    // static dateStr2LocalIsoDate(formDateStr: string, dateFormat : string): Date {
-    //     var date = moment(formDateStr, dateFormat).toDate();
-    //     var zoneOffset = date.getTimezoneOffset();
-    //     var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
-    //     return new Date(localISOTime);
-    // }
     static getDateDisplayStrFromFormat(date: Date): string {
         return moment(date).format(dateFormat);
-      }
-    
+    }
+    static getDatetimeLocaleFromDisplayDate(date: Date): string {
+        return TimeHandler.displayStr2LocalIsoString(TimeHandler.getDateDisplayStrFromFormat(date));
+    }
 }
