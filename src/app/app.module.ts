@@ -12,16 +12,16 @@ import { AccountService } from './_services';
 import { AppComponent } from './app.component';
 import { AlertComponent } from './_components';
 import { HomeComponent } from './home';;
-import { ScheduleComponent } from './schedule/schedule.component'
-;
 import { RaportForDateComponent } from './raport-for-date/raport-for-date.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FloatingSchedulesComponent } from './floating-schedules/floating-schedules.component';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
-
+import { MaterialModule } from './material/material.module';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -35,21 +35,23 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
         AppRoutingModule,
         RouterModule,
         BrowserAnimationsModule,
-        
-        
-        
+        MaterialModule,
+        MatSortModule,
+        MatTableModule,
+        MatPaginatorModule,
+    ],
+    exports: [
+        MaterialModule,
+        MatSortModule,
+        MatTableModule,
+        MatPaginatorModule,
     ],
     declarations: [
         AppComponent,
         AlertComponent,
         HomeComponent,
         RaportForDateComponent,
-        FloatingSchedulesComponent
-        
-        
-        
-        
-        //ScheduleComponent
+        FloatingSchedulesComponent,
     ],
     providers: [
         { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AccountService] },

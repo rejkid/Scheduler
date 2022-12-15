@@ -11,6 +11,14 @@ import { UserFunction } from 'src/app/_models/userfunction';
 import { AccountService, AlertService } from 'src/app/_services';
 import { environment } from 'src/environments/environment';
 
+import {MatTableDataSource } from '@angular/material/table';
+import { DataSource } from '@angular/cdk/table';
+import {MatTableModule } from '@angular/material/table';
+import {MatPaginatorModule } from '@angular/material/paginator';
+import {MatSortModule } from '@angular/material/sort';
+
+
+
 const dateFormat = `${environment.dateFormat}`;
 @Component({ 
   templateUrl: './schedule.allocator.component.html',
@@ -23,6 +31,8 @@ export class ScheduleAllocatorComponent implements OnInit {
   @Output() onScheduledAdded: EventEmitter<any>;
   id: string;
 
+  dataSource : any = [];
+
   scheduleIndexer: number = 0;
   schedules: Schedule[] = [];
   userFunctionIndexer: number = 0;
@@ -32,6 +42,8 @@ export class ScheduleAllocatorComponent implements OnInit {
   account: Account;
   isLoaded: boolean = false;
   isAdding: boolean = false;
+
+  displayedColumns: string[] = ['Id', 'FirstName', 'LastName', 'Email','Gender','JobTitle'];
 
   userFunctions: UserFunction[] = [];
 
@@ -101,6 +113,7 @@ export class ScheduleAllocatorComponent implements OnInit {
               this.onScheduledAdded.emit(this.schedules);
               this.userFunctionIndexer = account.userFunctions.length > 0 ? parseInt(account.userFunctions[account.userFunctions.length - 1].id) : 0;
 
+              this.dataSource = new MatTableDataSource(this.schedules);
               this.isLoaded = true;
             },
             error: error => {

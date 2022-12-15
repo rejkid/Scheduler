@@ -6,19 +6,25 @@ import { AdminRoutingModule } from './admin-routing.module';
 import { SubNavComponent } from './subnav.component';
 import { LayoutComponent } from './layout.component';
 import { OverviewComponent } from './overview.component';
-//import { ImportComponent } from './import/import.component';
+import { MatTableModule } from '@angular/material/table';
+import { MaterialModule } from '../material/material.module';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { ScheduleAllocatorComponent } from './accounts/schedule.allocator.component';
+
 
 
 @NgModule({
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        AdminRoutingModule
+        AdminRoutingModule,
     ],
     declarations: [
         SubNavComponent,
         LayoutComponent,
         OverviewComponent,
+
         //ImportComponent,
     ]
 })
