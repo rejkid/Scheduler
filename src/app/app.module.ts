@@ -22,7 +22,8 @@ import { MaterialModule } from './material/material.module';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
+import { MatButtonModule } from '@angular/material/button';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @NgModule({
     imports: [
@@ -39,12 +40,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatSortModule,
         MatTableModule,
         MatPaginatorModule,
+        MatButtonModule,
+        MatDatepickerModule
     ],
     exports: [
         MaterialModule,
         MatSortModule,
         MatTableModule,
         MatPaginatorModule,
+        MatButtonModule,
     ],
     declarations: [
         AppComponent,

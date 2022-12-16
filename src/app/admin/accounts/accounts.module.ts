@@ -13,7 +13,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MaterialModule } from 'src/app/material/material.module';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { AppModule } from 'src/app/app.module';
+//import { AppModule } from 'src/app/app.module';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 
 @NgModule({
@@ -22,13 +24,14 @@ import { AppModule } from 'src/app/app.module';
         ReactiveFormsModule,
         AccountsRoutingModule,
         ScheduleModule,
-        AppModule
+        //AppModule
         
-        // MatTableModule,
-        // MaterialModule,
-        // MatSortModule,
-        // MatTableModule,
-        // MatPaginatorModule,
+        MaterialModule,
+        MatSortModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatButtonModule,
+        MatDatepickerModule,
         
     ],
     declarations: [

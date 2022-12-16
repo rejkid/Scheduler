@@ -12,12 +12,7 @@ import { AccountService, AlertService } from 'src/app/_services';
 import { environment } from 'src/environments/environment';
 
 import {MatTableDataSource } from '@angular/material/table';
-import { DataSource } from '@angular/cdk/table';
-import {MatTableModule } from '@angular/material/table';
-import {MatPaginatorModule } from '@angular/material/paginator';
-import {MatSortModule } from '@angular/material/sort';
-
-
+import { SelectionModel } from '@angular/cdk/collections';
 
 const dateFormat = `${environment.dateFormat}`;
 @Component({ 
@@ -43,7 +38,7 @@ export class ScheduleAllocatorComponent implements OnInit {
   isLoaded: boolean = false;
   isAdding: boolean = false;
 
-  displayedColumns: string[] = ['Id', 'FirstName', 'LastName', 'Email','Gender','JobTitle'];
+  displayedColumns: string[] = ['Date', 'Duty', 'Actions'];
 
   userFunctions: UserFunction[] = [];
 
@@ -52,6 +47,7 @@ export class ScheduleAllocatorComponent implements OnInit {
   date: string = new Date().toISOString().slice(0, 16);
 
   poolElements: SchedulePoolElement[] = [];
+  selection = new SelectionModel<Schedule>(false, []);
   // isAddScheduleMode : boolean = false;
 
   constructor(accountService: AccountService,
@@ -92,13 +88,6 @@ export class ScheduleAllocatorComponent implements OnInit {
                 function: ['', [Validators.required, this.functionValidator]],
               });
 
-              // this.schedules = account.schedules;
-              // this.schedules.sort(function (a, b) {
-
-              //   if (a.date > b.date) return 1
-              //   if (a.date < b.date) return -1
-              //   return 0
-              // });
               this.assignAndSortSchedules(account);
 
               this.userFunctions = account.userFunctions.slice();
@@ -120,7 +109,6 @@ export class ScheduleAllocatorComponent implements OnInit {
               this.alertService.error(error);
             }
           });
-
       });
   }
 
@@ -131,21 +119,6 @@ export class ScheduleAllocatorComponent implements OnInit {
     return null;
   }
 
-  // onSelectAvailableDate(event: any, element: { value: string | number | Date; }) {
-  //   var date = element.value;
-  //   for (let index = 0; index < this.poolElements.length; index++) {
-  //     //const element = this.poolElements[index];
-
-  //     var poolDate = new Date(this.poolElements[index].date);
-  //     var selectedDate = new Date(element.value);
-  //     if (poolDate.getTime() == selectedDate.getTime()) {
-  //       var func = this.poolElements[index].userFunction;
-  //       this.form.get('availableFunction').setValue(this.poolElements[index].userFunction);
-
-  //     }
-  //   }
-  // }
-  
   // convenience getter for easy access to form fields
   get f() { return this.form.controls; }
 
@@ -224,6 +197,8 @@ export class ScheduleAllocatorComponent implements OnInit {
       }
     }
 
+    
+
     schedule2Delete.deleting = true;
     this.accountService.deleteSchedule(this.account.id, schedule2Delete)
       .pipe(first())
@@ -237,6 +212,10 @@ export class ScheduleAllocatorComponent implements OnInit {
       });
 
   }
+  rowClicked(row : any) {
+    var sel = this.selection.toggle(row);
+  }
+
   assignAndSortSchedules(account: Account) {
     this.schedules = account.schedules.slice();
     this.schedules.sort(function (a, b) {
