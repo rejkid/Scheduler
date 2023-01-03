@@ -131,7 +131,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  applyFilter(t : any) {
+  /* I am not sure if we need 'input' parameter - keep it for now*/
+  applyFilter(t : any, input:any) {
     const target = t as HTMLTextAreaElement;
     var filterValue = target.value;
     filterValue = filterValue.trim(); // Remove whitespace
