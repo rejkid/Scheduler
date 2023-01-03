@@ -17,6 +17,7 @@ import { SchedulePoolElements } from '../_models/schedulepoolelements';
 import { environment } from 'src/environments/environment';
 import { UserFunction } from '../_models/userfunction';
 import { SchedulePoolElement } from '../_models/schedulepoolelement';
+import { Schedule } from '../_models/schedule';
 
 
 const baseUrl = `${environment.apiUrl}/accounts`;
@@ -113,8 +114,8 @@ export class AccountService {
     addSchedule(id: any, schedule: any) {
         return this.http.put<Account>(`${baseUrl}/add-schedule/${id}`, schedule);
     }
-    updateSchedule(schedule: any) {
-        return this.http.post(`${baseUrl}/update-schedule`, schedule)
+    updateSchedule(id: any, schedule: Schedule) {
+        return this.http.post(`${baseUrl}/update-schedule/${id}`, schedule)
             .pipe(map((account: any) => {
                 // update the current account if it was updated
                 if (account.id === this.accountValue.id) {

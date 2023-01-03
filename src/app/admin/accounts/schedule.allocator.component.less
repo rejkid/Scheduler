@@ -1,7 +1,7 @@
 fieldset {
     margin: 8px;
     border: 1px solid silver;
-    padding: 8px;    
+    padding: 8px;
     border-radius: 4px;
 }
 
@@ -13,18 +13,32 @@ legend {
 
 
 table {
-    table-layout: fixed ;
-    width: 100% ;
-  }
-  td {
-    width: 25% ;
-  }
-.table-fixed tbody {
-    display:block;
-    height:20vh;
-    overflow:auto;
+    table-layout: fixed;
+    width: 100%;
 }
-.table-fixed thead, .table-fixed tbody tr {
-    display:table;
-    width:100%;
+
+td {
+    width: 25%;
+}
+
+.table-fixed tbody {
+    display: block;
+    height: 20vh;
+    overflow: auto;
+}
+
+.table-fixed thead,
+.table-fixed tbody tr {
+    display: table;
+    width: 100%;
+}
+
+.filter-header {
+    min-height: 64px;
+    padding: 8px 24px 0;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
 }

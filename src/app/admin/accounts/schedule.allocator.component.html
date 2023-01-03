@@ -5,20 +5,24 @@
             <label>Define schedules for {{account.firstName}}</label>
         </div>
     </div>
-    
+
     <fieldset>
         <legend>Date & Duty:</legend>
         <div class="row">
             <div class="mb-3 col-12">
-                <!--label>Date/Time</label>
-                <input type="datetime-local" formControlName="scheduledDate" class="form-control"-->
-                <!--mat-form-field appearance="outline">
-
-                    <input matInput formControlName="releasedAt">
-                
-                  </mat-form-field-->
+                <mat-form-field appearance="fill">
+                    <mat-label>Choose a date</mat-label>
+                    <input formControlName="scheduledDate" #ref matInput [ngxMatDatetimePicker]="picker"
+                        placeholder="Choose a date">
+                    <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+                    <mat-hint>{{ dateFormat }}</mat-hint>
+                    <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
+                        [stepMinute]="1" [stepSecond]="1" [touchUi]="false" [color]="undefined" [enableMeridian]="true"
+                        [disableMinute]="false" [hideTime]="false">
+                    </ngx-mat-datetime-picker>
+                </mat-form-field>
             </div>
-            <div class="mb-3 col-12">
+            <div class="mb-3 col-3">
                 <label>Duty</label>
                 <select formControlName="function" class="form-select"
                     [ngClass]="{ 'is-invalid': submitted && f['function'].errors }">
@@ -26,83 +30,77 @@
                         {{ item.userFunction }}
                     </option>
                 </select>
-    
-                <div *ngIf="submitted && form.controls['function'].hasError('invalidFunction')" class="alert alert-danger">
+
+                <div *ngIf="submitted && form.controls['function'].hasError('invalidFunction')"
+                    class="alert alert-danger">
                     Duty can't be empty</div>
             </div>
-    
+
         </div>
         <div class="mb-3" *ngIf="isLoggedAsAdmin">
             <button type="button" (click)="onAddSchedule()" class="btn btn-primary"
                 [ngClass]="{ 'disabled': !form.controls['scheduledDate'].valid}">
                 <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
             </button>
+            &nbsp;
         </div>
     </fieldset>
-
-    <fieldset>
-        <legend>Assigned Dates:</legend>
-        <table mat-table #table [dataSource]="dataSource" matSort>
-            <ng-container matColumnDef="Date">
-                <th mat-header-cell *matHeaderCellDef> Date </th>
-                <td mat-cell *matCellDef="let schedule"> {{schedule.date}} 
-                    <!--span *ngIf="!schedule.editable; else editPlace">
-                        {{schedule.value}} 
-                       </span>
-                       <ng-template #editPlace>
-                         <input [(ngModel)]="schedule.date" 
-                          (keyup.enter)="schedule.editable = false" >
-                       </ng-template-->
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="Duty">
-                <th mat-header-cell *matHeaderCellDef> Duty </th>
-                <td mat-cell *matCellDef="let schedule"> {{schedule.userFunction}} 
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="Actions">
-                <th mat-header-cell  *matHeaderCellDef > Actions </th>
-                <td mat-cell *matCellDef="let row" >
-                     <button mat-raised-button color="warn">Delete</button>
-                </td>
-              </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)" [ngClass]="{hovered: row.hovered, highlighted: selection.isSelected(row)}" (mouseover)="row.hovered = true" (mouseout)="row.hovered = false" [style.background]="selection.isSelected(row) ? 'lightblue' : ''"></tr>
-        </table>
-    </fieldset>
-
-    <fieldset>
-        <legend>Assigned Dates:</legend>
-        <div class="border">
-            
-            <table id=scheduledTable class="table table-fixed">
-                <thead>
-                    <tr>
-    
-                        <th style="width:20%">Date</th>
-                        <th style="width:20%">Duty</th>
-                        <th style="width:20%"></th>
-    
-                    </tr>
-                </thead>
-                <tbody *ngIf="schedules">
-                    <tr *ngFor="let s of schedules">
-                        <td>{{getDisplayDate(s.date)}} </td>
-    
-                        <td>{{s.userFunction}} </td>
-                        <td style="white-space: nowrap" *ngIf="isLoggedAsAdmin">
-                            <button type="button" (click)="onDeleteSchedule(s.id)"
-                                class="btn btn-sm btn-danger btn-delete-account">
-                                <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </fieldset>
-    <div type="button" class="mb-3">
-        <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
-    </div>
-    <div class="row mt-3"></div>
 </form>
+
+
+<legend>Assigned Dates:</legend>
+<div class="filter-header">
+    <mat-form-field>
+        <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+    </mat-form-field>
+</div>
+<table mat-table #table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+        <td mat-cell *matCellDef="let schedule">
+            <mat-form-field>
+                <input matInput [ngxMatDatetimePicker]="picker" (dateChange)="onDateChanged($event, schedule)"
+                    [value]="getDisplayDate(schedule.date)">
+                <mat-datepicker-toggle matIconSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
+                    [stepMinute]="1" [stepSecond]="1" [touchUi]="true" [color]="color" [enableMeridian]="false"
+                    [disableMinute]="false" [hideTime]="false">
+                </ngx-mat-datetime-picker>
+            </mat-form-field>
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="userFunction">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Duty </th>
+        <td mat-cell *matCellDef="let schedule">
+            <mat-form-field>
+                <mat-select placeholder={{schedule.userFunction}}
+                    (selectionChange)="onUserFunctionChanged($event, schedule)">
+                    <mat-option *ngFor="let f of userFunctions" [value]="f.userFunction">
+                        {{ f.userFunction }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span>
+            <button mat-raised-button color="warn" (click)="onDeleteSchedule(row.id)">Delete
+            </button>
+        </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{hovered: row.hovered}" (mouseover)="row.hovered = true"
+        (mouseout)="row.hovered = false" #tr (click)="onRowSelected(row, tr)">"
+    </tr>
+</table>
+
+<mat-paginator #paginator [length]="schedules.length" [pageSizeOptions]="[2, 3, 4, 6]" showFirstLastButtons>
+</mat-paginator>
+
+<div type="button" class="mb-3">
+    <a routerLink="/admin/accounts" class="btn btn-link">Back</a>
+</div>
+<div class="row mt-3"></div>

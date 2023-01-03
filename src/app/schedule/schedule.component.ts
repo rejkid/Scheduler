@@ -234,10 +234,12 @@ export class ScheduleComponent implements OnInit {
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
       date: localISOTime as any,
+      newDate: localISOTime as any,
       required: true,
       deleting: false,
       userAvailability: true,
-      userFunction: formFunction
+      userFunction: formFunction,
+      newUserFunction: formFunction
     }
     return schedule;
   }

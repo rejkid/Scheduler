@@ -23,7 +23,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
 @NgModule({
     imports: [
@@ -41,7 +45,12 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
         MatTableModule,
         MatPaginatorModule,
         MatButtonModule,
-        MatDatepickerModule
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        MatFormFieldModule,
+        NgxMatDatetimePickerModule,
+        NgxMatNativeDateModule 
     ],
     exports: [
         MaterialModule,
@@ -62,7 +71,9 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         
-        // provider used to create fake backend
+        //{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}} ,   
+        //{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}    // provider used to create fake backend
+        
         //fakeBackendProvider
         // ng build --configuration production  --aot --base-href="/scheduler/"
 

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
@@ -14,19 +14,44 @@ import { environment } from 'src/environments/environment';
 import {MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 
-const dateFormat = `${environment.dateFormat}`;
+import { MAT_DATE_FORMATS, ThemePalette } from '@angular/material/core';
+import { interval, timer } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortable } from '@angular/material/sort';
+
+const COLUMNS_SCHEMA = [
+  {
+    key: "date",
+    type: "Date",
+    label: "Date"
+  },
+  {
+    key: "userFunction",
+    type: "text",
+    label: "Duty"
+  },
+  {
+    key: "action",
+    type: "button",
+    label: "Action"
+  },
+]
+
 @Component({ 
   templateUrl: './schedule.allocator.component.html',
-  styleUrls: ['./schedule.allocator.component.less']
+  styleUrls: ['./schedule.allocator.component.less'],
 })
 
-
-export class ScheduleAllocatorComponent implements OnInit {
+export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
+  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  
+  dateFormat = `${environment.dateFormat}`;
   form: FormGroup;
   @Output() onScheduledAdded: EventEmitter<any>;
   id: string;
 
-  dataSource : any = [];
+  dataSource : MatTableDataSource<Schedule>;
 
   scheduleIndexer: number = 0;
   schedules: Schedule[] = [];
@@ -37,19 +62,18 @@ export class ScheduleAllocatorComponent implements OnInit {
   account: Account;
   isLoaded: boolean = false;
   isAdding: boolean = false;
+  isUpdating: boolean = false;
 
-  displayedColumns: string[] = ['Date', 'Duty', 'Actions'];
+  displayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
+  columnsSchema: any = COLUMNS_SCHEMA;
 
   userFunctions: UserFunction[] = [];
 
   isLoggedAsAdmin: boolean = false;
 
-  date: string = new Date().toISOString().slice(0, 16);
-
   poolElements: SchedulePoolElement[] = [];
-  selection = new SelectionModel<Schedule>(false, []);
-  // isAddScheduleMode : boolean = false;
-
+  public color: ThemePalette = 'primary';
+  
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
     private router: Router,
@@ -60,19 +84,9 @@ export class ScheduleAllocatorComponent implements OnInit {
     this.accountService = accountService;
     this.onScheduledAdded = new EventEmitter();
 
-    var d = new Date();
-    d.setHours(9, 30, 0, 0);
-    d = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-    this.date = d.toISOString().slice(0, 16);
-
     this.isLoggedAsAdmin = this.accountService.isAdmin();
   }
-
-  ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    // this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
-
-    // Get the account for this id 
+  ngAfterViewInit(): void {
     this.accountService.getById(this.id)
       .pipe(first())
       .subscribe(account => {
@@ -82,17 +96,14 @@ export class ScheduleAllocatorComponent implements OnInit {
           .subscribe({
             next: (value) => {
               this.functions = value;
+              this.initSchedules(account);
 
-              this.form = this.formBuilder.group({
-                scheduledDate: ['', Validators.required],
-                function: ['', [Validators.required, this.functionValidator]],
-              });
-
-              this.assignAndSortSchedules(account);
+              // Initial sorting by date
+              this.sort.sort(({ id: 'date', start: 'asc'}) as MatSortable);
 
               this.userFunctions = account.userFunctions.slice();
 
-              this.form.get('scheduledDate').setValue(this.date);
+              this.form.get('scheduledDate').setValue(this.getDisplayDate(new Date()));
               if (this.userFunctions.length > 0) {
                 this.form.get('function').setValue(this.userFunctions[0].userFunction);
               }
@@ -102,7 +113,6 @@ export class ScheduleAllocatorComponent implements OnInit {
               this.onScheduledAdded.emit(this.schedules);
               this.userFunctionIndexer = account.userFunctions.length > 0 ? parseInt(account.userFunctions[account.userFunctions.length - 1].id) : 0;
 
-              this.dataSource = new MatTableDataSource(this.schedules);
               this.isLoaded = true;
             },
             error: error => {
@@ -110,6 +120,23 @@ export class ScheduleAllocatorComponent implements OnInit {
             }
           });
       });
+  }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+
+    this.form = this.formBuilder.group({
+      scheduledDate: ['', Validators.required],
+      function: ['', [Validators.required, this.functionValidator]],
+    });
+  }
+
+  applyFilter(t : any) {
+    const target = t as HTMLTextAreaElement;
+    var filterValue = target.value;
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
   }
 
   functionValidator(control: FormControl): { [s: string]: boolean } {
@@ -145,7 +172,7 @@ export class ScheduleAllocatorComponent implements OnInit {
         next: (account) => {
           console.log(account);
           //this.schedules = account.schedules.slice();
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
         },
         complete: () => {
@@ -176,11 +203,13 @@ export class ScheduleAllocatorComponent implements OnInit {
 
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: this.form.controls[dateStr].value,
+      date: TimeHandler.displayStr2Date(this.form.controls[dateStr].value),
+      newDate: TimeHandler.displayStr2Date(this.form.controls[dateStr].value),
       required: true,
       deleting: false,
       userAvailability: true,
-      userFunction: this.form.controls[functionStr].value
+      userFunction: this.form.controls[functionStr].value,
+      newUserFunction: this.form.controls[functionStr].value
     }
     return schedule;
   }
@@ -197,35 +226,75 @@ export class ScheduleAllocatorComponent implements OnInit {
       }
     }
 
-    
-
     schedule2Delete.deleting = true;
     this.accountService.deleteSchedule(this.account.id, schedule2Delete)
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
         },
         error: error => {
           this.alertService.error(error);
         }
       });
-
-  }
-  rowClicked(row : any) {
-    var sel = this.selection.toggle(row);
   }
 
-  assignAndSortSchedules(account: Account) {
+  onDateChanged(event : any, schedule: Schedule) {
+    var dateTime = event.value;
+    var t = typeof (dateTime === 'Date');
+
+    var locStr = TimeHandler.displayStr2LocalIsoString(event.value);
+    //var d = TimeHandler.localDateStr2LocalDate(locStr);
+    //var d = (new Date(event.value)).getUTCDate();;
+    //var dat = moment(locStr).toDate();
+    schedule.newDate = locStr as any;//TimeHandler.displayStr2Date(locStr);//locStr as any;//locStr as any/*TimeHandler.displayStr2Date(event.value)*/;
+    schedule.newUserFunction = schedule.userFunction;
+
+    this.onUpdateSchedule(schedule);
+  }
+  onUserFunctionChanged(event : any, schedule: Schedule) {
+    var funcName = event.value;
+    var t = typeof (funcName === 'string');
+
+    schedule.newUserFunction = event.value;
+    schedule.newDate = schedule.date;
+
+    this.onUpdateSchedule(schedule);
+  }
+  onUpdateSchedule(schedule : Schedule) {
+    this.isUpdating = true;
+    // reset alerts on submit
+    this.alertService.clear();
+
+    this.accountService.updateSchedule(this.account.id, schedule)
+      .pipe(first())
+      .subscribe({
+        next: (account) => {
+          console.log(account);
+          this.initSchedules(account);
+        },
+        complete: () => {
+          this.isUpdating = false;
+        },
+        error: error => {
+          this.alertService.error(error);
+          this.isUpdating = false;
+        }
+      });
+  }
+
+  onRowSelected(schedule : Schedule, tr: any) {
+  }
+  initSchedules(account: Account) {
     this.schedules = account.schedules.slice();
-    this.schedules.sort(function (a, b) {
 
-      if (a.date > b.date) return 1
-      if (a.date < b.date) return -1
-      return 0
-    });
+    this.dataSource = new MatTableDataSource(this.schedules);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
   }
-  getDisplayDate(date: Date) : string {
+  getDisplayDate(date: Date): string {
+    var str = TimeHandler.getDateDisplayStrFromFormat(date);
     return TimeHandler.getDateDisplayStrFromFormat(date);
   }
 

@@ -25,6 +25,16 @@ export class TimeHandler {
         var localISOTime = new Date(date.getTime() - zoneOffset * 60 * 1000).toISOString(); // Local time in ISO format
         return localISOTime.replace("Z", "");
     }
+    static displayStr2Date(dateStr: string): Date {
+        var date = moment(dateStr, dateFormat).toDate();
+        var zoneOffset = date.getTimezoneOffset();
+        return new Date(date.getTime() - zoneOffset * 60 * 1000); // Local time in ISO format
+    }
+    static localDateStr2LocalDate(dateStr: string): Date {
+        var date = moment(dateStr, dateFormat).toDate();
+        var zoneOffset = date.getTimezoneOffset();
+        return new Date(date.getTime() + zoneOffset * 60 * 1000); // Local time in ISO format
+    }
     static getDateDisplayStrFromFormat(date: Date): string {
         return moment(date).format(dateFormat);
     }
