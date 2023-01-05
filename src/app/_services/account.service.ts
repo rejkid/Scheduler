@@ -44,9 +44,6 @@ export class AccountService {
             .pipe(map(account => {
                 //const body = account.body;
                 this.accountSubject.next(account);
-                const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
-
-                const cookie = document.cookie;
                 this.startRefreshTokenTimer();
                 return account;
             }));
@@ -184,6 +181,26 @@ export class AccountService {
     private refreshTokenTimeout: string | number | NodeJS.Timeout | undefined;
 
     private startRefreshTokenTimer() {
+        // HEADER:ALGORITHM & TOKEN TYPE
+
+        // parse json object from base64 encoded jwt token
+        var header = JSON.parse(atob(this.accountValue.jwtToken.split('.')[0]));
+
+
+        // PAYLOAD:DATA
+        // parse json object from base64 encoded jwt token
+        const payload = JSON.parse(atob(this.accountValue.jwtToken.split('.')[1]));
+
+        // VERIFY SIGNATURE
+        // parse json object from base64 encoded jwt token
+        const signature = this.accountValue.jwtToken.split('.')[2];
+
+
+        // VERIFY SIGNATURE
+        // parse json object from base64 encoded jwt token
+        //const jwtSignature = JSON.parse(atob(this.accountValue.jwtToken.split('.')[2]));
+
+
         // parse json object from base64 encoded jwt token
         const jwtToken = JSON.parse(atob(this.accountValue.jwtToken.split('.')[1]));
 
