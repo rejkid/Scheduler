@@ -204,8 +204,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: TimeHandler.displayStr2Date(this.form.controls[dateStr].value),
-      newDate: TimeHandler.displayStr2Date(this.form.controls[dateStr].value),
+      date: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any, 
+      newDate: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any, 
       required: true,
       deleting: false,
       userAvailability: true,
