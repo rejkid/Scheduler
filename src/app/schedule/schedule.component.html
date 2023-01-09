@@ -1,13 +1,13 @@
-<form [formGroup]="form" *ngIf="isLoaded">
-    <div class="mb-3 col">
-        <label>Schedules for {{account.firstName}}</label>
-    </div>
+<div class="mb-3 col" *ngIf="isLoaded">
+    <label>Schedules for {{account.firstName}}</label>
+</div>
+<form [formGroup]="form">
     <fieldset>
         <legend>Available Dates:</legend>
         <div *ngIf="!isLoggedAsAdmin">
             <div class="col">
                 <label>Date/Time</label>
-                <select formControlName="availableSchedule4Function" #element class="form-select">
+                <select #element formControlName="availableSchedule4Function" class="form-select">
                     <option *ngFor="let item of poolElements">
                         {{ getDateDisplayStr(item.date) }}/{{ item.userFunction }}
                     </option>
@@ -20,51 +20,53 @@
             <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
         </button>
     </fieldset>
-</form>
 
-<br>
-<fieldset>
-    <form [formGroup]="form_all" *ngIf="isLoaded">
+
+    <br>
+    <fieldset>
         <legend>Assigned Dates:</legend>
         <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates"
             name="allDates" value="">
         <label for="allDates" class="ps-2">All</label><br>
-    </form>
-    <table mat-table #table [dataSource]="dataSource" matSort>
-        <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date/Time </th>
-            <td mat-cell *matCellDef="let schedule">
-                <mat-form-field appearance="outline">
-                    <input matInput [value]="getDateDisplayStr(schedule.date)" />
-                </mat-form-field>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="userFunction">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Duty </th>
-            <td mat-cell *matCellDef="let schedule">
-                <mat-form-field appearance="outline">
-                    <input matInput [value]="schedule.userFunction" />
-                </mat-form-field>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef> Action </th>
-            <td mat-cell *matCellDef="let row">
-                <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span>
-                <button mat-raised-button color="warn" (click)="onDeleteSchedule($event, row.id)">Delete
-                </button>
-            </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{hovered: row.hovered}"
-            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false" #tr>
-        </tr>
-    </table>
 
-    <mat-paginator #paginator [length]="schedules.length" [pageSizeOptions]="[2, 3, 4, 6]" showFirstLastButtons>
-    </mat-paginator>
-</fieldset>
-<div class="mb-3">
-    <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
-</div>
-<div class="row mt-3"></div>
+        <div class="border ">
+            <table id=scheduledTable class="table table-fixed">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Date/Time</th>
+                        <th style="width:20%">Duty</th>
+                        <th style="width:20%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of schedules" [ngClass]="{ 'table-secondary': isScheduleFromPast(s)}">
+                        <td>{{getDateDisplayStr(s.date)}} </td>
+                        <td>{{s.userFunction}} </td>
+                        <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
+
+                            <button class="btn btn-sm btn-danger btn-delete-account" type="button"
+                                (click)="onDeleteSchedule($event, s.id)"
+                                [ngClass]="{ 'disabled': isScheduleFromPast(s)}">
+                                <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="!schedules">
+                        <td colspan="4" class="text-center">
+                            <span class="spinner-border spinner-border-lg align-center"></span>
+                        </td>
+                    </tr>
+
+
+                </tbody>
+
+
+            </table>
+        </div>
+    </fieldset>
+    <div class="mb-3">
+        <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
+    </div>
+    <div class="row mt-3"></div>
+</form>
