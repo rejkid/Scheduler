@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CheckboxControlValueAccessor, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Account, Role } from '../_models';
@@ -10,19 +10,47 @@ import { first } from 'rxjs/operators';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
+import { MatTableDataSource } from '@angular/material/table';
+import { ThemePalette } from '@angular/material/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
-
+const COLUMNS_SCHEMA = [
+  {
+    key: "date",
+    type: "Date",
+    label: "Date"
+  },
+  {
+    key: "userFunction",
+    type: "text",
+    label: "Duty"
+  },
+  {
+    key: "action",
+    type: "button",
+    label: "Action"
+  },
+]
 
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.less']
 })
-export class ScheduleComponent implements OnInit {
+export class ScheduleComponent implements OnInit, AfterViewInit {
+  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
   form: FormGroup;
+
+  /* form_all is needed to overcome bug in `material' 
+  if parent element contains ngIf statement*/
+  form_all: FormGroup;
+
   id: string;
 
-  schedules: Schedule[] = null;;
+  schedules: Schedule[] = [];
   scheduleIndexer: number = 0;
   userFunctionIndexer: number = 0;
   functions: string[] = [];
@@ -41,6 +69,12 @@ export class ScheduleComponent implements OnInit {
   poolElements: SchedulePoolElement[] = [];
   isAddScheduleMode: boolean = false;
 
+  dataSource : MatTableDataSource<Schedule>;
+  
+  displayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
+  columnsSchema: any = COLUMNS_SCHEMA;
+  public color: ThemePalette = 'primary';
+  
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
     private router: Router,
@@ -57,15 +91,7 @@ export class ScheduleComponent implements OnInit {
 
     this.isLoggedAsAdmin = this.accountService.isAdmin();
   }
-
-  ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
-
-    this.form = this.formBuilder.group({
-      availableSchedule4Function: ['',],
-      allDates: [false, '',]
-    });
+  ngAfterViewInit(): void {
     // Get the account for this id 
     this.accountService.getById(this.id)
       .pipe(first())
@@ -78,7 +104,9 @@ export class ScheduleComponent implements OnInit {
               next: (value) => {
                 this.functions = value;
 
-                this.assignAndSortSchedules(account);
+                this.initSchedules(account);
+                // Initial sorting by date
+                this.sort.sort(({ id: 'date', start: 'asc' }) as MatSortable);
 
                 this.isLoaded = true;
 
@@ -110,13 +138,24 @@ export class ScheduleComponent implements OnInit {
                 this.alertService.error(error);
               }
             });
-
         },
         error: (error: any) => {
           this.alertService.error(error);
         }
       })
   }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+    this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
+
+    this.form = this.formBuilder.group({
+      availableSchedule4Function: ['',],
+    });
+    this.form_all = this.formBuilder.group({
+      allDates: [false, '',]
+    });
+}
 
   onCheckboxChange(event: any) {
     this.updateSchedulesAndPoolFromServer();
@@ -131,6 +170,7 @@ export class ScheduleComponent implements OnInit {
 
   // convenience getter for easy access to form fields
   get f() { return this.form.controls; }
+  get f_all() { return this.form_all.controls; }
 
   onAddAvailableSchedule() {
 
@@ -162,7 +202,7 @@ export class ScheduleComponent implements OnInit {
           this.addingSchedule = false;
 
           console.log(account);
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
 
           if (this.poolElements.length != 0) {
@@ -187,7 +227,7 @@ export class ScheduleComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
           this.accountService.getAvailableSchedules(account.id)
             .pipe(first())
@@ -280,7 +320,7 @@ export class ScheduleComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
           this.schedules = account.schedules;
           this.updateSchedulesAndPoolFromServer();
@@ -292,25 +332,24 @@ export class ScheduleComponent implements OnInit {
 
   }
 
-  assignAndSortSchedules(account: Account) {
+  initSchedules(account: Account) {
     var schedules: Schedule[] = [];
-    var d = Date.now();
+    var now = Date.now();
     /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
     */
     for (let index = 0; index < account.schedules.length; index++) {
       const element = account.schedules[index];
       var date = Date.parse(element.date as any);
-      if (this.f['allDates'].value || date > d) {
+      if (this.f_all['allDates'].value || date > now) {
         schedules.push(element);
       }
     }
-    this.schedules = schedules.slice();
-    this.schedules.sort(function (a, b) {
 
-      if (a.date > b.date) return 1
-      if (a.date < b.date) return -1
-      return 0
-    });
+    this.schedules = schedules.slice();
+
+    this.dataSource = new MatTableDataSource(this.schedules);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   getDateDisplayStr(date: Date): string {

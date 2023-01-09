@@ -286,6 +286,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
   onRowSelected(schedule : Schedule, tr: any) {
   }
+  
   initSchedules(account: Account) {
     this.schedules = account.schedules.slice();
 
