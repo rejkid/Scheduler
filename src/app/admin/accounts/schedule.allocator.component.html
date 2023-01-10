@@ -60,7 +60,7 @@
         <mat-cell *matCellDef="let schedule">
             <mat-form-field appearance="outline" >
             <input matInput [ngxMatDatetimePicker]="picker" (dateChange)="onDateChanged($event, schedule)"
-                [value]="getDisplayDate(schedule.date)">
+                [value]="getDisplayDate(schedule.date)" [readonly]="true">
             <mat-datepicker-toggle matIconSuffix [for]="$any(picker)"></mat-datepicker-toggle>
             <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1" [stepMinute]="1"
                 [stepSecond]="1" [touchUi]="true" [color]="color" [enableMeridian]="false" [disableMinute]="false"

@@ -72,7 +72,9 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-mat
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         
         //{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}} ,   
-        //{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}    // provider used to create fake backend
+        //{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}    
+        
+        // provider used to create fake backend
         
         //fakeBackendProvider
         // ng build --configuration production  --aot --base-href="/scheduler/"

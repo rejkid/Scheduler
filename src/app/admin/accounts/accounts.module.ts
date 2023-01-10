@@ -73,11 +73,10 @@ const CUSTOM_MOMENT_FORMATS: NgxMatDateFormats = {
       deps: [MAT_DATE_LOCALE, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS]
     },
     // values
-    { provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS },
-    // {
-    //   provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-    //   useValue: { appearance: 'outline' },
-    // },
+    { 
+      provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS  
+    },
+    
   ],
   exports: [
     MatPaginatorModule
