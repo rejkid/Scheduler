@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs';
+import { TimeHandler } from '../_helpers/time.handler';
 import { SchedulePoolElement } from '../_models/schedulepoolelement';
 import { UserFunction } from '../_models/userfunction';
 import { AccountService, AlertService } from '../_services';
@@ -35,31 +36,6 @@ export class FloatingSchedulesComponent implements OnInit {
       });
   }
   onDeletePoolElement(event: any, scheduleId: string, email: string, userFunction: string) { // i is schedule index
-
-    // var found: number = -1;
-    // var schedule2Delete = null;
-
-    // for (let index = 0; index < this.schedules.length; index++) {
-    //   var scheduledIndex = this.schedules[index].id;
-    //   if (scheduledIndex === scheduleId) {
-    //     found = index; // array index not a schedule
-    //     schedule2Delete = this.schedules[index];
-    //     break;
-    //   }
-    // }
-    // const index = this.findScheduleIndexByScheduleId(scheduleId);
-    // var schedule = null;
-
-    // if (index == -1) {
-    //   return;
-    // }
-
-    // schedule = this.schedules[index];
-    // schedule.deleting = true;
-
-    //userFunctions UserFunction;
-
-
     this.accountService.deletePoolElement(scheduleId, email, userFunction)
       .pipe(first())
       .subscribe({
@@ -84,5 +60,9 @@ export class FloatingSchedulesComponent implements OnInit {
         }
       });
 
+  }
+  getDisplayDate(date: Date): string {
+    var str = TimeHandler.getDateDisplayStrFromFormat(date);
+    return TimeHandler.getDateDisplayStrFromFormat(date);
   }
 }

@@ -1,6 +1,5 @@
 <div class="p-4">
     <div class="container">
-
         <div class="border border-primary" *ngIf="isLoaded">
             <table id=scheduledTable class="table table-striped">
                 <thead>
@@ -14,7 +13,7 @@
                 <tbody *ngIf="poolElements">
                     <tr *ngFor="let s of poolElements">
                         <td>{{s.email}} </td>
-                        <td>{{s.date}} </td>
+                        <td>{{getDisplayDate(s.date)}} </td>
                         <td>{{s.userFunction}} </td>
                         <td style="white-space: nowrap" *ngIf="isLoggedAsAdmin">
                             <button class="btn btn-sm btn-danger btn-delete-account" type="button"
@@ -24,7 +23,6 @@
                         </td>
                     </tr>
                 </tbody>
-
             </table>
         </div>
 
