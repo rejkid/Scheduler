@@ -3,9 +3,6 @@ import { first } from 'rxjs/operators';
 import { Role } from 'src/app/_models';
 import { AccountService } from 'src/app/_services';
 
-//import { AccountService } from '../_services';
-//import { Account } from '../_models';
-
 @Component({ templateUrl: 'list.component.html' })
 export class ListComponent implements OnInit {
     accounts: any[];

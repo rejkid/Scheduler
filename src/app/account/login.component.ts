@@ -25,14 +25,15 @@ export class LoginComponent implements OnInit {
         this.form = this.formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required],
-            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
+            dob: ['', [Validators.required/* , TimeHandler.dateVaidator */]],
         });
-        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
+        //this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
+        this.form.get('dob').setValue(this.getDisplayDate(new Date()));
     }
-    
+
     // convenience getter for easy access to form fields
-    get f() { return this.form.controls; }  
-      
+    get f() { return this.form.controls; }
+
     onSubmit() {
         this.submitted = true;
 
@@ -45,7 +46,7 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.login(this.f['email'].value, this.f['password'].value, this.f['dob'].value)
+        this.accountService.login(this.f['email'].value, this.f['password'].value, TimeHandler.displayStr2LocalIsoString(this.f['dob'].value))
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -58,5 +59,9 @@ export class LoginComponent implements OnInit {
                     this.loading = false;
                 }
             });
+    }
+    getDisplayDate(date: Date): string {
+        var str = TimeHandler.getDateDisplayStrFromFormat(date);
+        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }
