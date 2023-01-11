@@ -36,7 +36,7 @@ export class RegisterComponent implements OnInit {
             validator: MustMatch('password', 'confirmPassword')
         });
 
-        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
+        //this.form.get('dob').setValue(getDisplayDate()/* moment().format('YYYY-MM-DD') */);
     }
 
     // convenience getter for easy access to form fields
@@ -67,4 +67,9 @@ export class RegisterComponent implements OnInit {
                 }
             });
     }
+    getDisplayDate(date: Date): string {
+        var str = TimeHandler.getDateDisplayStrFromFormat(date);
+        return TimeHandler.getDateDisplayStrFromFormat(date);
+    }
+
 }

@@ -6,7 +6,7 @@ import { first } from 'rxjs/operators';
 import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
 import { Schedule } from '../_models/schedule';
-import * as moment from 'moment';
+import { TimeHandler } from '../_helpers/time.handler';
 
 @Component({ templateUrl: 'update.component.html' })
 export class UpdateComponent implements OnInit {
@@ -32,13 +32,12 @@ export class UpdateComponent implements OnInit {
             firstName: [this.account.firstName, Validators.required],
             lastName: [this.account.lastName, Validators.required],
             email: [this.account.email, [Validators.required, Validators.email]],
-            dob: [moment(this.account.dob).format("YYYY-MM-DD"), Validators.required],
+            dob: [this.getDisplayDate(this.account.dob), Validators.required],
             password: ['', [Validators.minLength(6)]],
             confirmPassword: ['']
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
-        this.form.value('dob').setValue(moment().format('YYYY-MM-DD'));
     }
 
     // convenience getter for easy access to form fields
@@ -63,11 +62,10 @@ export class UpdateComponent implements OnInit {
         this.account.firstName = this.form.controls['firstName'].value;
         this.account.lastName = this.form.controls['lastName'].value;
         this.account.email = this.form.controls['email'].value;
-        //this.account.role = this.form.controls['role'].value;
 
         this.account.password = this.form.controls['password'].value;
         this.account.confirmPassword = this.form.controls['confirmPassword'].value;
-        this.account.dob = this.form.controls['dob'].value;
+        this.account.dob = TimeHandler.displayStr2LocalIsoString(this.f['dob'].value ) as any; 
         this.account.schedules = this.schedules;
 
 
@@ -76,7 +74,8 @@ export class UpdateComponent implements OnInit {
             .subscribe({
                 next: () => {
                     this.alertService.success('Update successful', { keepAfterRouteChange: true });
-                    this.router.navigate(['../'], { relativeTo: this.route });
+                    this.loading = false;
+                    //this.router.navigate(['../'], { relativeTo: this.route });
                 },
                 error: error => {
                     this.alertService.error(error);
@@ -95,13 +94,8 @@ export class UpdateComponent implements OnInit {
                 });
         }
     }
-    scheduledAdded(schedules: Schedule[]) {
-        // schedules.sort(function (a, b) {
-
-        //     if (a.date > b.date) return 1
-        //     if (a.date < b.date) return -1
-        //     return 0
-        // });
-        this.schedules = schedules;
+    getDisplayDate(date: Date): string {
+        var str = TimeHandler.getDateDisplayStrFromFormat(date);
+        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }
