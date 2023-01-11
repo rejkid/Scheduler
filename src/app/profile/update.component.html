@@ -1,7 +1,7 @@
 ﻿<h1>Update Profile</h1>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="row">
-        <div class="col-2">
+        <div class="col-3">
             <label>Title</label>
             <select formControlName="title" class="form-select"
                 [ngClass]="{ 'is-invalid': submitted && f['title'].errors }">
@@ -23,7 +23,7 @@
                 <div *ngIf="f['firstName'].errors['required']">First Name is required</div>
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <label>Last Name</label>
             <input type="text" formControlName="lastName" class="form-control"
                 [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }" />
