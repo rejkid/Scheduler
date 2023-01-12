@@ -46,7 +46,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   
-  dateFormat = `${environment.dateFormat}`;
+  dateFormat = `${environment.dateTimeFormat}`;
   form: FormGroup;
   @Output() onScheduledAdded: EventEmitter<any>;
   id: string;

@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  dateFormat: 'YYYY-MM-DD HH:mm',
+  dateTimeFormat: 'YYYY-MM-DD HH:mm',
+  dateFormat: 'YYYY-MM-DD',
 
   //apiUrl: 'https://49.176.185.39:4000'
   apiUrl: 'https://rosterbackend.azurewebsites.net'

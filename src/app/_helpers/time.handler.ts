@@ -8,13 +8,13 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { AbstractControl } from '@angular/forms';
 
-const dateFormat = `${environment.dateFormat}`;
+const dateFormat = `${environment.dateTimeFormat}`;
 
 @Injectable()
 export class TimeHandler {
     constructor() { }
-    static dateVaidator(AC: AbstractControl) {
-        if (AC && AC.value && !moment(AC.value, 'YYYY-MM-DD', true).isValid()) {
+    static dateValidator(AC: AbstractControl) {
+        if (AC && AC.value && !moment(AC.value, `${environment.dateFormat}`, true).isValid()) {
             return { 'dateVaidator': true };
         }
         return null;

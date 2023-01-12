@@ -7,6 +7,7 @@ import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
 import { TimeHandler } from '../_helpers/time.handler';
 import * as moment from 'moment';
+import { environment } from 'src/environments/environment';
 
 enum TokenStatus {
     Validating,
@@ -35,7 +36,6 @@ export class ResetPasswordComponent implements OnInit {
         this.form = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6)]],
             confirmPassword: ['', Validators.required],
-            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
@@ -49,6 +49,7 @@ export class ResetPasswordComponent implements OnInit {
         // remove token from url to prevent http referer leakage
         this.router.navigate([], { relativeTo: this.route, replaceUrl: true });
 
+
         this.accountService.validateResetToken(token, dob)
             .pipe(first())
             .subscribe({
@@ -60,7 +61,6 @@ export class ResetPasswordComponent implements OnInit {
                     this.tokenStatus = TokenStatus.Invalid;
                 }
             });
-            this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
     }
 
     // convenience getter for easy access to form fields
@@ -90,5 +90,9 @@ export class ResetPasswordComponent implements OnInit {
                     this.loading = false;
                 }
             });
+    }
+    getDisplayDate(date: Date): string {
+        var str = TimeHandler.getDateDisplayStrFromFormat(date);
+        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }

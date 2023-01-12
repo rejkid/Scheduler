@@ -7,6 +7,7 @@ import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
 import { TimeHandler } from '../_helpers/time.handler';
 import * as moment from 'moment';
+import { environment } from 'src/environments/environment';
 
 @Component({ templateUrl: 'register.component.html' })
 export class RegisterComponent implements OnInit {
@@ -28,15 +29,14 @@ export class RegisterComponent implements OnInit {
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
+            dob: ['', [Validators.required]],
             password: ['', [Validators.required, Validators.minLength(6)]],
             confirmPassword: ['', Validators.required],
             acceptTerms: [false, Validators.requiredTrue]
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
-
-        //this.form.get('dob').setValue(getDisplayDate()/* moment().format('YYYY-MM-DD') */);
+        this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
     }
 
     // convenience getter for easy access to form fields
@@ -54,6 +54,8 @@ export class RegisterComponent implements OnInit {
         }
 
         this.loading = true;
+        this.f['dob'].setValue(moment(this.f['dob'].value).format( `${environment.dateFormat}`));
+
         this.accountService.register(this.form.value)
             .pipe(first())
             .subscribe({

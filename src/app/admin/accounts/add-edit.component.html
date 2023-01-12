@@ -15,14 +15,14 @@
                 <div *ngIf="f['title'].errors['required']">Title is required</div>
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <label>First Name</label>
             <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }" />
             <div *ngIf="submitted && f['firstName'].errors" class="invalid-feedback">
                 <div *ngIf="f['firstName'].errors['required']">First Name is required</div>
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <label>Last Name</label>
             <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }" />
             <div *ngIf="submitted && f['lastName'].errors" class="invalid-feedback">
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="mb-3 col-12">
             <label>Role</label>
             <!--option *ngFor="let item of options" [value]="item.year">
                 {{ item.year }}
@@ -61,14 +61,17 @@
 
     <div class="row">
         <div class="col-12">
-            <label>DOB</label>
-            <input type="date" formControlName="dob" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && f['dob'].errors }" />
-            <div *ngIf="submitted && f['dob'].errors" class="invalid-feedback">
-                <div *ngIf="f['dob'].errors['required']">DOB is required</div>
-                <div *ngIf="f['dob'].errors['dob']">DOB is invalid</div>
-            </div>
-    
+            <mat-form-field appearance="outline" hideRequiredMarker>
+                <mat-label>DOB</mat-label>
+                <input formControlName="dob" #ref matInput [matDatepicker]="picker" placeholder="Choose a date"
+                    required />
+                <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+                <mat-hint>YYYY-MM-DD</mat-hint>
+                <mat-datepicker #picker></mat-datepicker>
+                <!--mat-error *ngIf="f['dob'].errors['required']">DOB is required</mat-error-->
+                <mat-error *ngIf="f['dob'].errors">Invalid DOB</mat-error>
+            </mat-form-field>
+
         </div>
     </div>
 

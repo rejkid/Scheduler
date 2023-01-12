@@ -2,6 +2,7 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { first, finalize } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
 
 import { AccountService, AlertService } from '../_services';
@@ -21,9 +22,9 @@ export class ForgotPasswordComponent implements OnInit {
     ngOnInit() {
         this.form = this.formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
-            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
+            dob: ['', [Validators.required, TimeHandler.dateValidator]],
         });
-        this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
+        this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
     }
 
     // convenience getter for easy access to form fields
@@ -39,15 +40,18 @@ export class ForgotPasswordComponent implements OnInit {
         if (this.form.invalid) {
             return;
         }
-
         this.loading = true;
         this.alertService.clear();
-        this.accountService.forgotPassword(this.f['email'].value, this.f['dob'].value)
+        this.accountService.forgotPassword(this.f['email'].value, moment(this.f['dob'].value).format( `${environment.dateFormat}`))
             .pipe(first())
             .pipe(finalize(() => this.loading = false))
             .subscribe({
                 next: () => this.alertService.success('Please check your email for password reset instructions'),
                 error: error => this.alertService.error(error)
             });
+    }
+    getDisplayDate(date: Date): string {
+        var str = TimeHandler.getDateDisplayStrFromFormat(date);
+        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }

@@ -6,6 +6,7 @@ import { first } from 'rxjs/operators';
 import { AccountService, AlertService } from '../_services';
 import * as moment from 'moment';
 import { TimeHandler } from '../_helpers/time.handler';
+import { environment } from 'src/environments/environment';
 
 @Component({ templateUrl: 'login.component.html' })
 export class LoginComponent implements OnInit {
@@ -25,10 +26,9 @@ export class LoginComponent implements OnInit {
         this.form = this.formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required],
-            dob: ['', [Validators.required/* , TimeHandler.dateVaidator */]],
+            dob: ['', [Validators.required , TimeHandler.dateValidator]],
         });
-        //this.form.get('dob').setValue(moment().format('YYYY-MM-DD'));
-        this.form.get('dob').setValue(this.getDisplayDate(new Date()));
+        this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
     }
 
     // convenience getter for easy access to form fields
@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.login(this.f['email'].value, this.f['password'].value, TimeHandler.displayStr2LocalIsoString(this.f['dob'].value))
+        this.accountService.login(this.f['email'].value, this.f['password'].value, moment(this.f['dob'].value).format( `${environment.dateFormat}`)/* TimeHandler.displayStr2LocalIsoString(this.f['dob'].value) */)
             .pipe(first())
             .subscribe({
                 next: () => {

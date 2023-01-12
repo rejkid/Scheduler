@@ -15,6 +15,7 @@ import { Account, Role } from 'src/app/_models';
 import { MustMatch } from 'src/app/_helpers';
 import { TimeHandler } from 'src/app/_helpers/time.handler';
 import * as moment from 'moment';
+import { environment } from 'src/environments/environment';
 
 @Component({ templateUrl: 'add-edit.component.html' })
 export class AddEditComponent implements OnInit {
@@ -63,14 +64,12 @@ export class AddEditComponent implements OnInit {
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             role: ['' , Validators.required],
-            dob: ['', [Validators.required, TimeHandler.dateVaidator]],
+            dob: ['', [Validators.required, TimeHandler.dateValidator]],
             password: ['', [Validators.minLength(6), this.isAddMode ? Validators.required : Validators.nullValidator]],
             confirmPassword: ['']
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
-
-        
 
         if (!this.isAddMode) {
             this.accountService.getById(this.id)
@@ -78,12 +77,12 @@ export class AddEditComponent implements OnInit {
                 .subscribe(x => {
                     this.account =  x; // initial account
                     this.form.patchValue(x)
-                    this.form.get('dob').setValue(moment(this.account.dob).format('YYYY-MM-DD'));
+                    this.form.get('dob').setValue(moment(this.account.dob).format( `${environment.dateFormat}`));
                 });
+        } else {
+            this.form.get('role').setValue(this.roles[0]);
+            this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
         }
-
-        // Set the first available role
-        this.form.get('role').setValue(this.roles[0]);
     }
       
     // convenience getter for easy access to form fields
@@ -110,6 +109,7 @@ export class AddEditComponent implements OnInit {
     }
 
     private createAccount() {
+        this.f['dob'].setValue(moment(this.f['dob'].value).format( `${environment.dateFormat}`));
         this.accountService.create(this.form.value)
             .pipe(first())
             .subscribe({
@@ -125,6 +125,7 @@ export class AddEditComponent implements OnInit {
     }
 
     private updateAccount() {
+        this.f['dob'].setValue(moment(this.f['dob'].value).format( `${environment.dateFormat}`));
         this.accountService.update(this.id, this.form.value/* this.account */)
             .pipe(first())
             .subscribe({
