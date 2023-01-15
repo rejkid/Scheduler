@@ -37,19 +37,19 @@ const CUSTOM_MOMENT_FORMATS: NgxMatDateFormats = {
   },
 };
 
-const MY_DATE_FORMATS = {
+export const MY_DATE_FORMATS = {
   parse: {
-      dateInput: `${environment.dateFormat}`
+    dateInput: `${environment.dateFormat}`,
   },
   display: {
-      // dateInput: { month: 'short', year: 'numeric', day: 'numeric' },
-      dateInput: `${environment.dateFormat}`,
-      monthYearLabel: {year: 'numeric', month: 'short'},
-      dateA11yLabel: {year: 'numeric', month: 'long', day: 'numeric'},
-      monthYearA11yLabel: {year: 'numeric', month: 'long'},
-  }
+    dateInput: `${environment.dateFormat}`,
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY'
+  },
 };
 
+/* This is an alternative way of displaying Date in the format YYYY-MM-DD */
 export class AppDateAdapter extends NativeDateAdapter {
 
   override format(date: Date, displayFormat: Object): string {
