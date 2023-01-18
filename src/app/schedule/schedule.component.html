@@ -9,7 +9,7 @@
                 <label>Date/Time</label>
                 <select #element formControlName="availableSchedule4Function" class="form-select">
                     <option *ngFor="let item of poolElements">
-                        {{ getDateDisplayStr(item.date) }}/{{ item.userFunction }}
+                        {{ getDisplayDate(item.date) }}/{{ item.userFunction }}
                     </option>
                 </select>
             </div>
@@ -21,52 +21,47 @@
         </button>
     </fieldset>
 
-
-    <br>
     <fieldset>
         <legend>Assigned Dates:</legend>
         <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates"
             name="allDates" value="">
         <label for="allDates" class="ps-2">All</label><br>
-
-        <div class="border ">
-            <table id=scheduledTable class="table table-fixed">
-                <thead>
-                    <tr>
-                        <th style="width:20%">Date/Time</th>
-                        <th style="width:20%">Duty</th>
-                        <th style="width:20%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let s of schedules" [ngClass]="{ 'table-secondary': isScheduleFromPast(s)}">
-                        <td>{{getDateDisplayStr(s.date)}} </td>
-                        <td>{{s.userFunction}} </td>
-                        <td style="white-space: nowrap" *ngIf="!isLoggedAsAdmin">
-
-                            <button class="btn btn-sm btn-danger btn-delete-account" type="button"
-                                (click)="onDeleteSchedule($event, s.id)"
-                                [ngClass]="{ 'disabled': isScheduleFromPast(s)}">
-                                <span *ngIf="s.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr *ngIf="!schedules">
-                        <td colspan="4" class="text-center">
-                            <span class="spinner-border spinner-border-lg align-center"></span>
-                        </td>
-                    </tr>
-
-
-                </tbody>
-
-
-            </table>
-        </div>
     </fieldset>
-    <div class="mb-3">
-        <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
-    </div>
-    <div class="row mt-3"></div>
 </form>
+
+<br>
+
+<div class="border">
+    <mat-table #table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Date/Time </mat-header-cell>
+            <mat-cell *matCellDef="let schedule">{{getDisplayDate(schedule.date)}}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="userFunction">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Duty </mat-header-cell>
+            <mat-cell *matCellDef="let schedule">{{schedule.userFunction}}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span>
+                <button mat-raised-button color="warn" (click)="onDeleteSchedule($event, row.id)">Delete
+                </button>
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{hovered: row.hovered}"
+            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false" #tr (click)="onRowSelected(row, tr)">
+        </mat-row>
+    </mat-table>
+
+    <mat-paginator #paginator [length]="schedules.length" [pageSizeOptions]="[2, 10, 30, 50]" showFirstLastButtons>
+    </mat-paginator>
+</div>
+
+<div class="mb-3">
+    <a routerLink="/schedule" disabled="false" class="btn btn-link">Back</a>
+</div>
+<div class="row mt-3"></div>

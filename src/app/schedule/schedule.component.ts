@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CheckboxControlValueAccessor, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Account, Role } from '../_models';
@@ -10,19 +10,43 @@ import { first } from 'rxjs/operators';
 import * as moment from 'moment';
 import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
+import { MatTableDataSource } from '@angular/material/table';
+import { ThemePalette } from '@angular/material/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
 
+const COLUMNS_SCHEMA = [
+  {
+    key: "date",
+    type: "Date",
+    label: "DateTime"
+  },
+  {
+    key: "userFunction",
+    type: "text",
+    label: "Duty"
+  },
+  {
+    key: "action",
+    type: "button",
+    label: "Action"
+  },
+]
 
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.less']
 })
-export class ScheduleComponent implements OnInit {
+export class ScheduleComponent implements OnInit, AfterViewInit {
+  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
   form: FormGroup;
   id: string;
 
-  schedules: Schedule[] = null;;
+  schedules: Schedule[] = [];
   scheduleIndexer: number = 0;
   userFunctionIndexer: number = 0;
   functions: string[] = [];
@@ -41,6 +65,11 @@ export class ScheduleComponent implements OnInit {
   poolElements: SchedulePoolElement[] = [];
   isAddScheduleMode: boolean = false;
 
+  dataSource: MatTableDataSource<Schedule>;
+  displayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
+  columnsSchema: any = COLUMNS_SCHEMA;
+  public color: ThemePalette = 'primary';
+
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
     private router: Router,
@@ -50,22 +79,10 @@ export class ScheduleComponent implements OnInit {
 
     this.accountService = accountService;
 
-    var d = new Date();
-    d.setHours(9, 30, 0, 0);
-    d = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-    this.date = d.toISOString().slice(0, 16);
-
     this.isLoggedAsAdmin = this.accountService.isAdmin();
   }
-
-  ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
-
-    this.form = this.formBuilder.group({
-      availableSchedule4Function: ['',],
-      allDates: [false, '',]
-    });
+  
+  ngAfterViewInit(): void {
     // Get the account for this id 
     this.accountService.getById(this.id)
       .pipe(first())
@@ -78,7 +95,10 @@ export class ScheduleComponent implements OnInit {
               next: (value) => {
                 this.functions = value;
 
-                this.assignAndSortSchedules(account);
+                this.initSchedules(account);
+
+                // Initial sorting by date
+                this.sort.sort(({ id: 'date', start: 'asc' }) as MatSortable);
 
                 this.isLoaded = true;
 
@@ -97,7 +117,7 @@ export class ScheduleComponent implements OnInit {
                       this.poolElements = pollElements.schedulePoolElements;
 
                       if (this.poolElements.length != 0) {
-                        this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+                        this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
                       }
 
                     },
@@ -116,6 +136,25 @@ export class ScheduleComponent implements OnInit {
           this.alertService.error(error);
         }
       })
+
+  }
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+    this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
+
+    this.form = this.formBuilder.group({
+      availableSchedule4Function: ['',],
+      allDates: [false, '',]
+    });
+  }
+  /* I am not sure if we need 'input' parameter - keep it for now*/
+  applyFilter(t: any, input: any) {
+    const target = t as HTMLTextAreaElement;
+    var filterValue = target.value;
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
   }
 
   onCheckboxChange(event: any) {
@@ -162,11 +201,11 @@ export class ScheduleComponent implements OnInit {
           this.addingSchedule = false;
 
           console.log(account);
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
 
           if (this.poolElements.length != 0) {
-            this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+            this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
           }
           this.updateSchedulesAndPoolFromServer();
         },
@@ -187,7 +226,7 @@ export class ScheduleComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
           this.accountService.getAvailableSchedules(account.id)
             .pipe(first())
@@ -197,7 +236,7 @@ export class ScheduleComponent implements OnInit {
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
-                  this.form.get('availableSchedule4Function').setValue(this.getDateDisplayStr(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+                  this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
                 }
               },
               error: error => {
@@ -280,7 +319,7 @@ export class ScheduleComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.assignAndSortSchedules(account);
+          this.initSchedules(account);
 
           this.schedules = account.schedules;
           this.updateSchedulesAndPoolFromServer();
@@ -292,28 +331,30 @@ export class ScheduleComponent implements OnInit {
 
   }
 
-  assignAndSortSchedules(account: Account) {
+  onRowSelected(schedule: Schedule, tr: any) {
+  }
+
+  initSchedules(account: Account) {
     var schedules: Schedule[] = [];
     var d = Date.now();
-    /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
-    */
+    //   /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
     for (let index = 0; index < account.schedules.length; index++) {
       const element = account.schedules[index];
       var date = Date.parse(element.date as any);
+      var cond = this.f['allDates'].value;
       if (this.f['allDates'].value || date > d) {
         schedules.push(element);
       }
     }
     this.schedules = schedules.slice();
-    this.schedules.sort(function (a, b) {
 
-      if (a.date > b.date) return 1
-      if (a.date < b.date) return -1
-      return 0
-    });
+    this.dataSource = new MatTableDataSource(this.schedules);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
   }
 
-  getDateDisplayStr(date: Date): string {
+  getDisplayDate(date: Date): string {
     return TimeHandler.getDateDisplayStrFromFormat(date)
   }
 
