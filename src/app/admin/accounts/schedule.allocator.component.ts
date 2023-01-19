@@ -216,13 +216,14 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   }
   onDeleteSchedule(i: string) { // i is table index
     var found: number = -1;
-    var schedule2Delete = null;
+    var schedule2Delete : Schedule = null;
 
     for (let index = 0; index < this.schedules.length; index++) {
       var scheduledIndex = this.schedules[index].id;
       if (scheduledIndex === i) {
         found = index; // array index not a table
         schedule2Delete = this.schedules[index];
+        schedule2Delete.deleting = true;
         break;
       }
     }
@@ -234,9 +235,33 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
         next: (account) => {
           this.initSchedules(account);
         },
+        complete: () => {
+          schedule2Delete.deleting = false;
+        },
         error: error => {
           this.alertService.error(error);
+          schedule2Delete.deleting = false;
+          this.updateSchedulesFromServer();
         }
+      });
+  }
+
+  updateSchedulesFromServer() {
+    this.accountService.getById(this.id)
+      .pipe(first())
+      .subscribe(account => {
+
+        this.accountService.getRoles()
+          .pipe(first())
+          .subscribe({
+            next: (value) => {
+              this.functions = value;
+              this.initSchedules(account);
+            },
+            error: error => {
+              this.alertService.error(error);
+            }
+          });
       });
   }
 

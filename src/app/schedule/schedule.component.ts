@@ -306,7 +306,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       }
     }
     const index = this.findScheduleIndexByScheduleId(scheduleId);
-    var schedule = null;
+    var schedule : Schedule = null;
 
     if (index == -1) {
       return;
@@ -322,10 +322,12 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           this.initSchedules(account);
 
           this.schedules = account.schedules;
-          this.updateSchedulesAndPoolFromServer();
+          schedule.deleting = true;
         },
         error: error => {
           this.alertService.error(error);
+          this.updateSchedulesAndPoolFromServer();
+          schedule.deleting = true;
         }
       });
 

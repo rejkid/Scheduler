@@ -46,8 +46,9 @@
         <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span>
-                <button mat-raised-button color="warn" (click)="onDeleteSchedule($event, row.id)">Delete
+                <button class="btn btn-sm btn-danger btn-delete-account" type="button" (click)="onDeleteSchedule($event, row.id)"
+                    [ngClass]="{ 'disabled': isScheduleFromPast(row)}">
+                    <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
                 </button>
             </mat-cell>
         </ng-container>
