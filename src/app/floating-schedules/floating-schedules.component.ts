@@ -36,6 +36,10 @@ export class FloatingSchedulesComponent implements OnInit {
       });
   }
   onDeletePoolElement(event: any, scheduleId: string, email: string, userFunction: string) { // i is schedule index
+    let poolElement : SchedulePoolElement = this.getPoolElementById(scheduleId);
+    if(poolElement == null)
+      return; // Nothing to delete, should never happen
+    poolElement.deleting = true;
     this.accountService.deletePoolElement(scheduleId, email, userFunction)
       .pipe(first())
       .subscribe({
@@ -48,9 +52,11 @@ export class FloatingSchedulesComponent implements OnInit {
                 this.poolElements = pollElements.schedulePoolElements;
 
                 this.isLoaded = true;
+                poolElement.deleting = false;
               },
               error: error => {
                 this.alertService.error(error);
+                poolElement.deleting = false;
               }
             });
 
@@ -60,6 +66,15 @@ export class FloatingSchedulesComponent implements OnInit {
         }
       });
 
+  }
+  getPoolElementById(poolId: string) : SchedulePoolElement {
+    for (let index = 0; index < this.poolElements.length; index++) {
+      const element = this.poolElements[index];
+      if(element.id === poolId) {
+        return element;
+      }
+    }
+    return null;
   }
   getDisplayDate(date: Date): string {
     var str = TimeHandler.getDateDisplayStrFromFormat(date);
