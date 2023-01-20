@@ -6,7 +6,7 @@ import { Account, Role } from './_models';
 @Component({ selector: 'app', templateUrl: 'app.component.html' })
 export class AppComponent {
     Role = Role;
-    account: Account;
+    account: Account = null;
 
     constructor(private accountService: AccountService) {
         this.accountService.account.subscribe(x => {

@@ -11,6 +11,12 @@
             <a routerLink="/logout" (click)="logout()" class="nav-item nav-link">Logout</a>
         </div>
     </nav>
+    <div *ngIf="!account">
+        <td colspan="4" class="text-center">
+            <span class="spinner-border spinner-border-lg align-center"></span>
+        </td>
+    </div>
+
 
     <!-- subnav router outlet -->
     <router-outlet name="subnav"></router-outlet>
