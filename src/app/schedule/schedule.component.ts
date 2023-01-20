@@ -319,7 +319,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.initSchedules(account);
+          this.updateSchedulesAndPoolFromServer();
 
           this.schedules = account.schedules;
           schedule.deleting = true;

@@ -233,7 +233,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.initSchedules(account);
+          this.updateSchedulesFromServer();
         },
         complete: () => {
           schedule2Delete.deleting = false;
