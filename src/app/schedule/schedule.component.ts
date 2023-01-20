@@ -322,12 +322,12 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           this.updateSchedulesAndPoolFromServer();
 
           this.schedules = account.schedules;
-          schedule.deleting = true;
+          schedule.deleting = false;
         },
         error: error => {
           this.alertService.error(error);
           this.updateSchedulesAndPoolFromServer();
-          schedule.deleting = true;
+          schedule.deleting = false;
         }
       });
 

@@ -16,7 +16,7 @@
         </div>
         <br>
         <button type="button" (click)="onAddAvailableSchedule()" class="btn btn-primary"
-            [ngClass]="{ 'disabled': !form.controls['availableSchedule4Function'].valid || poolElements.length <= 0}">
+            [ngClass]="{ 'disabled': !form.controls['availableSchedule4Function'].valid || poolElements.length <= 0 || isAdding}">
             <span *ngIf="isAdding" class="spinner-border spinner-border-sm mr-1"></span> Add
         </button>
     </fieldset>
@@ -47,7 +47,7 @@
             <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <button class="btn btn-sm btn-danger btn-delete-account" type="button" (click)="onDeleteSchedule($event, row.id)"
-                    [ngClass]="{ 'disabled': isScheduleFromPast(row)}">
+                    [ngClass]="{ 'disabled': isScheduleFromPast(row) || row.deleting}">
                     <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
                 </button>
             </mat-cell>
