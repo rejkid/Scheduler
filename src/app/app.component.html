@@ -16,7 +16,7 @@
             <a routerLink="/logout" (click)="logout()" class="nav-item nav-link">Logout</a>
         </div>
     </nav>
-    <div class="d-flex justify-content-center" *ngIf="!account">
+    <div class="d-flex justify-content-center" *ngIf="!account && !isLoaded">
         <span class="spinner-border spinner-border-lg align-center"></span>
     </div>
 
