@@ -31,6 +31,10 @@
 
 <br>
 
+<div class="d-flex justify-content-center" *ngIf="!account">
+    <span class="spinner-border spinner-border-lg align-center"></span>
+</div>
+
 <div class="border">
     <mat-table #table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="date">

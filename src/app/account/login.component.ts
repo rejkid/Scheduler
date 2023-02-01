@@ -8,7 +8,12 @@ import * as moment from 'moment';
 import { TimeHandler } from '../_helpers/time.handler';
 import { environment } from 'src/environments/environment';
 
-@Component({ templateUrl: 'login.component.html' })
+
+@Component(
+    {
+        templateUrl: 'login.component.html',
+        styleUrls: ['login.component.less'],
+    })
 export class LoginComponent implements OnInit {
     form: FormGroup;
     loading = false;

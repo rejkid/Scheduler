@@ -3,22 +3,22 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="row">
             <div class="mb-3">
-                <label>Email</label>
-                <input type="text" formControlName="email" class="form-control"
-                    [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+                <label id="emailLabel">Email</label>
+                <input id="emailInput" type="text" formControlName="email" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" required />
                 <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
                     <div *ngIf="f['email'].errors['required']">Email is required</div>
                     <div *ngIf="f['email'].errors['email']">Email is invalid</div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="mb-3">
-                <mat-form-field appearance="outline" hideRequiredMarker>
+                <mat-form-field appearance="outline">
                     <mat-label>DOB</mat-label>
-                    <input formControlName="dob" #ref matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date"
-                        required />
+                    <input formControlName="dob" #ref matInput [ngxMatDatetimePicker]="picker"
+                        placeholder="Choose a date" required />
                     <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
                     <mat-hint>YYYY-MM-DD</mat-hint>
                     <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
@@ -31,7 +31,7 @@
         </div>
         <div class="row">
             <div class="mb-3">
-                <label>Password</label>
+                <label id="passwordLabel">Password</label>
                 <input type="password" formControlName="password" class="form-control"
                     [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
                 <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
