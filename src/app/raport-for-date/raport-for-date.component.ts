@@ -62,6 +62,13 @@ export class RaportForDateComponent implements OnInit {
         next: (dateFunctionTeams: DateFunctionTeams) => {
           this.teams = dateFunctionTeams.dateFunctionTeams;
 
+          this.teams.sort(function (a, b) {
+            if (a.function > b.function) return 1
+            if (a.function < b.function) return -1
+            return 0
+          });
+
+          
           for (let index = 0; index < this.teams.length; index++) {
             var user: User[] = this.teams[index].users
             console.log(this.teams[index]);
@@ -91,7 +98,6 @@ export class RaportForDateComponent implements OnInit {
             this.list.push(value.scheduleDateTimes[index].date)
           }
           this.list.sort(function (a, b) {
-
             if (a > b) return 1
             if (a < b) return -1
             return 0
