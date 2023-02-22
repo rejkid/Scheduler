@@ -91,7 +91,6 @@ export class AccountService {
     }
 
     getById(id: string) {
-        this.http.get<Account>(`${baseUrl}/${id}`);
         return this.http.get<Account>(`${baseUrl}/${id}`);
     }
 

@@ -11,7 +11,11 @@ export class ScheduleListComponent implements OnInit {
     constructor(private accountService: AccountService) {}
 
     ngOnInit() {
-        console.log(this.account.firstName);
+        if (this.account) {
+            console.log(this.account.firstName);
+        } else {
+            console.log("account is NULL");
+        }
     }
 
 }
