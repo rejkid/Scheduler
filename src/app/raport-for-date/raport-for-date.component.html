@@ -1,5 +1,5 @@
 <div class="p-4">
-    <div class="container">
+    <div class="container" *ngIf="futureScheduleDateStrings">
         <form [formGroup]="form">
             <div class="mb-3">
                 <label for="dates" class="me-2">Dates:</label>
@@ -7,7 +7,7 @@
                     name="allDates" value="" class="ms-5">
                 <label for="allDates" class="ps-2">All</label><br>
                 <select #dates formControlName="dates" class="form-select" (ngModelChange)="onSelected($event)">
-                    <option *ngFor="let date of latesetList">{{date}}</option>
+                    <option *ngFor="let date of futureScheduleDateStrings">{{date}}</option>
                 </select>
                 <div *ngIf="f['dates'].dirty && f['dates'].hasError('invalidDate')" class="alert alert-danger">Date must
                     be

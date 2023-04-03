@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import * as signalR from '@microsoft/signalr';
 import { first } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
 import { SchedulePoolElement } from '../_models/schedulepoolelement';
 import { UserFunction } from '../_models/userfunction';
@@ -19,9 +21,29 @@ export class FloatingSchedulesComponent implements OnInit {
   constructor(private accountService: AccountService,
     private alertService: AlertService) {
     this.isLoggedAsAdmin = this.accountService.isAdmin();
+
+    const connection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Information)
+      .withUrl(environment.baseUrl + '/update')
+      .build();
+
+    connection.start().then(function () {
+      console.log('SignalR Connected!');
+    }).catch(function (err) {
+      return console.error(err.toString());
+    });
+
+    connection.on("SendUpdate", (id: number) => {
+      this.updateSchedulesFromServer();
+    });
+
   }
 
   ngOnInit(): void {
+    this.updateSchedulesFromServer();
+  }
+
+  private updateSchedulesFromServer() {
     this.accountService.getAllAvailableSchedules()
       .pipe(first())
       .subscribe({
@@ -35,9 +57,10 @@ export class FloatingSchedulesComponent implements OnInit {
         }
       });
   }
+
   onDeletePoolElement(event: any, scheduleId: string, email: string, userFunction: string) { // i is schedule index
-    let poolElement : SchedulePoolElement = this.getPoolElementById(scheduleId);
-    if(poolElement == null)
+    let poolElement: SchedulePoolElement = this.getPoolElementById(scheduleId);
+    if (poolElement == null)
       return; // Nothing to delete, should never happen
     poolElement.deleting = true;
     this.accountService.deletePoolElement(scheduleId, email, userFunction)
@@ -67,10 +90,10 @@ export class FloatingSchedulesComponent implements OnInit {
       });
 
   }
-  getPoolElementById(poolId: string) : SchedulePoolElement {
+  getPoolElementById(poolId: string): SchedulePoolElement {
     for (let index = 0; index < this.poolElements.length; index++) {
       const element = this.poolElements[index];
-      if(element.id === poolId) {
+      if (element.id === poolId) {
         return element;
       }
     }

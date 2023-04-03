@@ -19,7 +19,7 @@ import { ScheduleDateTimes } from '../_models/scheduledatetimes';
 export class RaportForDateComponent implements OnInit {
   form: FormGroup;
   list: Date[] = [];
-  latesetList: string[] = [];
+  futureScheduleDateStrings: string[] = [];
 
   dateSelected: string;
   isLoaded: boolean = false;
@@ -49,7 +49,7 @@ export class RaportForDateComponent implements OnInit {
 
   onSelected(value: any): void {
     this.dateSelected = value;
-    if (this.latesetList.length <= 0 )
+    if (this.futureScheduleDateStrings.length <= 0 )
       return;
 
     this.users = [];
@@ -87,7 +87,7 @@ export class RaportForDateComponent implements OnInit {
   }
 
   getAllDates() {
-    this.latesetList = [];
+    this.futureScheduleDateStrings = [];
     this.list = [];
     this.accountService.getAllDates()
       .pipe(first())
@@ -107,11 +107,11 @@ export class RaportForDateComponent implements OnInit {
             var tnow = Date.now();
             var tElement = Date.parse(element as any);
             if (this.f['allDates'].value || tElement > tnow) {
-              this.latesetList.push(this.getDateDisplayStr(element));
+              this.futureScheduleDateStrings.push(this.getDateDisplayStr(element));
             }
           }
-          if (this.latesetList.length > 0) {
-            this.form.get('dates').setValue(this.latesetList.at(0));
+          if (this.futureScheduleDateStrings.length > 0) {
+            this.form.get('dates').setValue(this.futureScheduleDateStrings.at(0));
           }
 
           this.isLoaded = true;

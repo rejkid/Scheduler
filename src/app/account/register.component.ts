@@ -39,6 +39,7 @@ export class RegisterComponent implements OnInit {
         this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
     }
 
+    
     // convenience getter for easy access to form fields
     get f() { return this.form.controls; }
 

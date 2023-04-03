@@ -11,13 +11,14 @@ import { UserFunction } from 'src/app/_models/userfunction';
 import { AccountService, AlertService } from 'src/app/_services';
 import { environment } from 'src/environments/environment';
 
-import {MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 
 import { MAT_DATE_FORMATS, ThemePalette } from '@angular/material/core';
 import { interval, timer } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
+import * as signalR from '@microsoft/signalr';
 
 const COLUMNS_SCHEMA = [
   {
@@ -37,7 +38,7 @@ const COLUMNS_SCHEMA = [
   },
 ]
 
-@Component({ 
+@Component({
   templateUrl: './schedule.allocator.component.html',
   styleUrls: ['./schedule.allocator.component.less'],
 })
@@ -45,13 +46,13 @@ const COLUMNS_SCHEMA = [
 export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  
+
   dateFormat = `${environment.dateTimeFormat}`;
   form: FormGroup;
   @Output() onScheduledAdded: EventEmitter<any>;
   id: string;
 
-  dataSource : MatTableDataSource<Schedule>;
+  dataSource: MatTableDataSource<Schedule>;
 
   scheduleIndexer: number = 0;
   schedules: Schedule[] = [];
@@ -73,7 +74,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
   poolElements: SchedulePoolElement[] = [];
   public color: ThemePalette = 'primary';
-  
+
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
     private router: Router,
@@ -85,6 +86,21 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     this.onScheduledAdded = new EventEmitter();
 
     this.isLoggedAsAdmin = this.accountService.isAdmin();
+
+    const connection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Information)
+      .withUrl(environment.baseUrl + '/update')
+      .build();
+
+    connection.start().then(function () {
+      console.log('SignalR Connected!');
+    }).catch(function (err) {
+      return console.error(err.toString());
+    });
+
+    connection.on("SendUpdate", (id: number) => {
+      this.updateSchedulesFromServer();
+    });
   }
   ngAfterViewInit(): void {
     this.accountService.getById(this.id)
@@ -99,7 +115,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
               this.initSchedules(account);
 
               // Initial sorting by date
-              this.sort.sort(({ id: 'date', start: 'asc'}) as MatSortable);
+              this.sort.sort(({ id: 'date', start: 'asc' }) as MatSortable);
 
               this.userFunctions = account.userFunctions.slice();
 
@@ -132,7 +148,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   }
 
   /* I am not sure if we need 'input' parameter - keep it for now*/
-  applyFilter(t : any, input:any) {
+  applyFilter(t: any, input: any) {
     const target = t as HTMLTextAreaElement;
     var filterValue = target.value;
     filterValue = filterValue.trim(); // Remove whitespace
@@ -171,15 +187,14 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          console.log(account);
-          //this.schedules = account.schedules.slice();
+          this.updateSchedulesFromServer();
           this.initSchedules(account);
-
         },
         complete: () => {
           this.isAdding = false;
         },
         error: error => {
+          this.updateSchedulesFromServer();
           this.alertService.error(error);
           this.isAdding = false;
         }
@@ -204,8 +219,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any, 
-      newDate: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any, 
+      date: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any,
+      newDate: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any,
       required: true,
       deleting: false,
       userAvailability: true,
@@ -216,7 +231,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   }
   onDeleteSchedule(i: string) { // i is table index
     var found: number = -1;
-    var schedule2Delete : Schedule = null;
+    var schedule2Delete: Schedule = null;
 
     for (let index = 0; index < this.schedules.length; index++) {
       var scheduledIndex = this.schedules[index].id;
@@ -265,7 +280,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onDateChanged(event : any, schedule: Schedule) {
+  onDateChanged(event: any, schedule: Schedule) {
     var dateTime = event.value;
     var t = typeof (dateTime === 'Date');
 
@@ -276,18 +291,18 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     schedule.newDate = locStr as any;//TimeHandler.displayStr2Date(locStr);//locStr as any;//locStr as any/*TimeHandler.displayStr2Date(event.value)*/;
     schedule.newUserFunction = schedule.userFunction;
 
-    this.onUpdateSchedule(schedule);
+    this.updateSchedules(schedule);
   }
-  onUserFunctionChanged(event : any, schedule: Schedule) {
+  onUserFunctionChanged(event: any, schedule: Schedule) {
     var funcName = event.value;
     var t = typeof (funcName === 'string');
 
     schedule.newUserFunction = event.value;
     schedule.newDate = schedule.date;
 
-    this.onUpdateSchedule(schedule);
+    this.updateSchedules(schedule);
   }
-  onUpdateSchedule(schedule : Schedule) {
+  updateSchedules(schedule: Schedule) {
     this.isUpdating = true;
     // reset alerts on submit
     this.alertService.clear();
@@ -309,8 +324,9 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onRowSelected(schedule : Schedule, tr: any) {
+  onRowSelected(schedule: Schedule, tr: any) {
   }
+
   initSchedules(account: Account) {
     this.schedules = account.schedules.slice();
 

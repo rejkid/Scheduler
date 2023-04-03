@@ -14,7 +14,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ThemePalette } from '@angular/material/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
-
+import * as signalR from '@microsoft/signalr';
 
 const COLUMNS_SCHEMA = [
   {
@@ -80,8 +80,25 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     this.accountService = accountService;
 
     this.isLoggedAsAdmin = this.accountService.isAdmin();
+
+
+    var tempStr = environment.baseUrl;
+    const connection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Information)
+      .withUrl(environment.baseUrl + '/update')
+      .build();
+
+    connection.start().then(function () {
+      console.log('SignalR Connected!');
+    }).catch(function (err) {
+      return console.error(err.toString());
+    });
+
+    connection.on("SendUpdate", (id: number) => {
+      this.updateSchedulesAndPoolFromServer();
+    });
   }
-  
+
   ngAfterViewInit(): void {
     // Get the account for this id 
     this.accountService.getById(this.id)
@@ -148,6 +165,9 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       allDates: [false, '',]
     });
   }
+  ngOnDestroy() {
+    console.log("Called");
+  }
   /* I am not sure if we need 'input' parameter - keep it for now*/
   applyFilter(t: any, input: any) {
     const target = t as HTMLTextAreaElement;
@@ -207,7 +227,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           if (this.poolElements.length != 0) {
             this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
           }
-          this.updateSchedulesAndPoolFromServer();
+          //this.updateSchedulesAndPoolFromServer(this.id);
         },
         complete: () => {
           this.isAdding = false;
@@ -216,7 +236,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           this.addingSchedule = false;
           this.alertService.error(error);
           this.isAdding = false;
-          this.updateSchedulesAndPoolFromServer();
+          //this.updateSchedulesAndPoolFromServer(this.id);
         }
       });
   }
@@ -306,7 +326,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       }
     }
     const index = this.findScheduleIndexByScheduleId(scheduleId);
-    var schedule : Schedule = null;
+    var schedule: Schedule = null;
 
     if (index == -1) {
       return;
@@ -319,14 +339,14 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          this.updateSchedulesAndPoolFromServer();
+          //this.updateSchedulesAndPoolFromServer(this.id);
 
           this.schedules = account.schedules;
           schedule.deleting = false;
         },
         error: error => {
           this.alertService.error(error);
-          this.updateSchedulesAndPoolFromServer();
+          //this.updateSchedulesAndPoolFromServer(this.id);
           schedule.deleting = false;
         }
       });
