@@ -44,10 +44,14 @@ const COLUMNS_SCHEMA = [
 })
 
 export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
+  convertServerDate2Local = TimeHandler.convertServerDate2Local; // getter for TimeHandler.convertServerDate2Local static method
+
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   dateFormat = `${environment.dateTimeFormat}`;
+  dateTimeFormat = `${environment.dateTimeFormat}`;
+
   form: FormGroup;
   @Output() onScheduledAdded: EventEmitter<any>;
   id: string;
@@ -119,7 +123,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
               this.userFunctions = account.userFunctions.slice();
 
-              this.form.get('scheduledDate').setValue(this.getDisplayDate(new Date()));
+              this.form.get('scheduledDate').setValue(new Date());
               if (this.userFunctions.length > 0) {
                 this.form.get('function').setValue(this.userFunctions[0].userFunction);
               }
@@ -203,13 +207,13 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
   createSchedule(dateStr: string, functionStr: string): Schedule {
     var formDate = new Date(this.form.controls[dateStr].value);
+    formDate.setSeconds(0); // Re-set seconds to zero
     var formTime = formDate.getTime();
 
     var formFunction = this.form.controls[functionStr].value;
 
     for (let index = 0; index < this.schedules.length; index++) {
-      var scheduleDate = new Date(this.schedules[index].date);
-      var scheduleTime = scheduleDate.getTime();
+      var scheduleTime = TimeHandler.convertServerDate2Local(this.schedules[index].date).getTime();
       var scheduleFunction = this.schedules[index].userFunction;
       if (scheduleTime == formTime && scheduleFunction == formFunction) {
         this.alertService.warn("The user is already " + scheduleFunction + " for that date/time");
@@ -217,10 +221,13 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       }
     }
 
+    var newDate : Date = this.form.controls[dateStr].value.toDate();
+    newDate.setSeconds(0);
+
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any,
-      newDate: TimeHandler.displayStr2LocalIsoString(this.form.controls[dateStr].value) as any,
+      date: newDate,
+      newDate: newDate,
       required: true,
       deleting: false,
       userAvailability: true,
@@ -284,11 +291,9 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     var dateTime = event.value;
     var t = typeof (dateTime === 'Date');
 
-    var locStr = TimeHandler.displayStr2LocalIsoString(event.value);
-    //var d = TimeHandler.localDateStr2LocalDate(locStr);
-    //var d = (new Date(event.value)).getUTCDate();;
-    //var dat = moment(locStr).toDate();
-    schedule.newDate = locStr as any;//TimeHandler.displayStr2Date(locStr);//locStr as any;//locStr as any/*TimeHandler.displayStr2Date(event.value)*/;
+    var newDate: Date = event.value.toDate(); // Convert moment to Date
+    schedule.newDate = newDate;
+    schedule.newDate.setSeconds(0); // Little trick which does what mat angular should have done - reset seconds
     schedule.newUserFunction = schedule.userFunction;
 
     this.updateSchedules(schedule);
@@ -335,10 +340,9 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
 
   }
-  getDisplayDate(date: Date): string {
-    var str = TimeHandler.getDateDisplayStrFromFormat(date);
-    return TimeHandler.getDateDisplayStrFromFormat(date);
-  }
+  // convertServerDate2Local(date: Date): Date {
+  //   return TimeHandler.convertServerDate2Local(date);
+  // }
 
   get isAdmin() {
     return this.account.role == Role.Admin;

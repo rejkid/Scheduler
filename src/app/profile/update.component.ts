@@ -7,9 +7,12 @@ import { AccountService, AlertService } from '../_services';
 import { MustMatch } from '../_helpers';
 import { Schedule } from '../_models/schedule';
 import { TimeHandler } from '../_helpers/time.handler';
-
+import { environment } from 'src/environments/environment';
+import * as moment from 'moment';
 @Component({ templateUrl: 'update.component.html' })
 export class UpdateComponent implements OnInit {
+    DATE_FORMAT = `${environment.dateFormat}`;
+    
     account = this.accountService.accountValue;
     form: FormGroup;
     loading = false;
@@ -32,9 +35,9 @@ export class UpdateComponent implements OnInit {
             firstName: [this.account.firstName, Validators.required],
             lastName: [this.account.lastName, Validators.required],
             email: [this.account.email, [Validators.required, Validators.email]],
-            dob: [this.getDisplayDate(this.account.dob), Validators.required],
+            dob: [TimeHandler.convertServerDate2Local(this.account.dob), Validators.required],
             password: ['', [Validators.minLength(6)]],
-            confirmPassword: ['']
+            confirmPassword: ['', [Validators.minLength(6)]]
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
@@ -65,7 +68,7 @@ export class UpdateComponent implements OnInit {
 
         this.account.password = this.form.controls['password'].value;
         this.account.confirmPassword = this.form.controls['confirmPassword'].value;
-        this.account.dob = TimeHandler.displayStr2LocalIsoString(this.f['dob'].value ) as any; 
+        this.account.dob = this.f['dob'].value; 
         this.account.schedules = this.schedules;
 
 
@@ -93,9 +96,5 @@ export class UpdateComponent implements OnInit {
                     this.alertService.success('Account deleted successfully', { keepAfterRouteChange: true });
                 });
         }
-    }
-    getDisplayDate(date: Date): string {
-        var str = TimeHandler.getDateDisplayStrFromFormat(date);
-        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }

@@ -41,4 +41,11 @@ export class TimeHandler {
     static getDatetimeLocaleFromDisplayDate(date: Date): string {
         return TimeHandler.displayStr2LocalIsoString(TimeHandler.getDateDisplayStrFromFormat(date));
     }
+
+    static convertServerDate2Local(date: Date): Date {
+        return moment(moment.utc(date)).local().toDate();
+    }
+    // static convertServerDateTime2Local(date: Date): Date {
+    //     return moment(moment.utc(date)).local().toDate();
+    // }
 }

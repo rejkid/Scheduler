@@ -13,6 +13,8 @@ import { environment } from 'src/environments/environment';
 
 @Component({ templateUrl: 'add-edit.component.html' })
 export class AddEditComponent implements OnInit {
+    DATE_FORMAT = `${environment.dateFormat}`;
+
     form: FormGroup;
     id: string;// =  this.route.snapshot.params['id'];;
     isAddMode: boolean;
@@ -66,8 +68,7 @@ export class AddEditComponent implements OnInit {
                         // Edit mode
                         this.account = x; // initial account
                         this.form.patchValue(x);
-                        var val = this.f['dob'];
-                        this.f['dob'].setValue(moment(this.account.dob).format(`${environment.dateFormat}`));
+                        this.form.get('dob').setValue(TimeHandler.convertServerDate2Local(this.account.dob)); // Overwrite patch for DOB
                     },
                     error: error => {
                         console.error(error);
@@ -76,7 +77,7 @@ export class AddEditComponent implements OnInit {
         } else {
             // Add mode
             this.form.get('role').setValue(this.roles[0]);
-            this.form.get('dob').setValue(moment(new Date()).format(`${environment.dateFormat}`));
+            this.form.get('dob').setValue(new Date());
         }
     }
 
@@ -104,7 +105,11 @@ export class AddEditComponent implements OnInit {
     }
 
     private createAccount() {
-        this.f['dob'].setValue(moment(this.f['dob'].value).format(`${environment.dateFormat}`));
+        // var formDateStr = this.getDateDisplayStr(this.f['dob'].value);
+        // formDateStr = TimeHandler.getDatetimeLocaleFromDisplayDate(this.f['dob'].value);
+        // var localISOTime = TimeHandler.displayStr2LocalIsoString(formDateStr);
+
+        //this.f['dob'].setValue(/* this.f['dob'].value *//* moment(this.f['dob'].value).format(`${environment.dateFormat}`) */);
         this.accountService.create(this.form.value)
             .pipe(first())
             .subscribe({
@@ -120,7 +125,7 @@ export class AddEditComponent implements OnInit {
     }
 
     private updateAccount() {
-        this.f['dob'].setValue(moment(this.f['dob'].value).format(`${environment.dateFormat}`));
+        //this.f['dob'].setValue(moment(this.f['dob'].value).format(`${environment.dateFormat}`));
         this.accountService.update(this.id, this.form.value/* this.account */)
             .pipe(first())
             .subscribe({

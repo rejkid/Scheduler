@@ -20,7 +20,7 @@
                     <input formControlName="dob" #ref matInput [ngxMatDatetimePicker]="picker"
                         placeholder="Choose a date" required />
                     <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-                    <mat-hint>YYYY-MM-DD</mat-hint>
+                    <mat-hint>{{DATE_FORMAT}}</mat-hint>
                     <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="false" [stepHour]="1"
                         [stepMinute]="1" [stepSecond]="1" [touchUi]="false" [color]="undefined" [enableMeridian]="false"
                         [disableMinute]="false" [hideTime]="true">

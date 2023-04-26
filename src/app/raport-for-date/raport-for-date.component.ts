@@ -9,6 +9,7 @@ import { TimeHandler } from '../_helpers/time.handler';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { ScheduleDateTimes } from '../_models/scheduledatetimes';
+import { ScheduleDateTime } from '../_models/scheduledatetime';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class RaportForDateComponent implements OnInit {
   isUsersLoaded: boolean = false;
   users: User[] = [];
   teams: Team[] = [];
+  scheduleDateTime : ScheduleDateTime[] = [];
 
   constructor(private accountService: AccountService,
     private formBuilder: FormBuilder) {
@@ -47,6 +49,17 @@ export class RaportForDateComponent implements OnInit {
     return this.form.controls;
   }
 
+  reverseScheduleLookup(dateStr: string) : Date {
+    
+    for (let index = 0; index < this.scheduleDateTime.length; index++) {
+      const scheduleDateTime = this.scheduleDateTime[index];
+      var  dStr = this.getDateDisplayStr(scheduleDateTime.date);
+      if(dStr == dateStr)
+        return scheduleDateTime.date;
+    } 
+    return null;
+  }
+
   onSelected(value: any): void {
     this.dateSelected = value;
     if (this.futureScheduleDateStrings.length <= 0 )
@@ -54,9 +67,8 @@ export class RaportForDateComponent implements OnInit {
 
     this.users = [];
     
-    //var locTime = moment(this.dateSelected, dateFormat).toISOString();
-    var localISOTime = TimeHandler.displayStr2LocalIsoString(this.dateSelected);
-    this.accountService.GetTeamsByFunctionForDate(/*locTime*/localISOTime)
+    var date = this.reverseScheduleLookup(value);
+    this.accountService.GetTeamsByFunctionForDate(date)
       .pipe(first())
       .subscribe({
         next: (dateFunctionTeams: DateFunctionTeams) => {
@@ -93,8 +105,10 @@ export class RaportForDateComponent implements OnInit {
       .pipe(first())
       .subscribe({
         next: (value : ScheduleDateTimes) => {
+          this.scheduleDateTime = value.scheduleDateTimes;
 
           for (let index = 0; index < value.scheduleDateTimes.length; index++) {
+            // Add server side date
             this.list.push(value.scheduleDateTimes[index].date)
           }
           this.list.sort(function (a, b) {
@@ -103,11 +117,15 @@ export class RaportForDateComponent implements OnInit {
             return 0
           });
           for (let index = 0; index < this.list.length; index++) {
-            const element = this.list[index];
-            var tnow = Date.now();
-            var tElement = Date.parse(element as any);
-            if (this.f['allDates'].value || tElement > tnow) {
-              this.futureScheduleDateStrings.push(this.getDateDisplayStr(element));
+            const scheduleServerDate = this.list[index];
+            var tNowLocalMs = Date.now();
+            var tElement = Date.parse(scheduleServerDate as any);
+            var scheduleLocalDate = moment(moment.utc(scheduleServerDate)).local().toDate();
+            var scheduleLocalMs = scheduleLocalDate.getTime();
+
+            if (this.f['allDates'].value || scheduleLocalMs > tNowLocalMs) {
+
+              this.futureScheduleDateStrings.push(this.getDateDisplayStr(scheduleServerDate));
             }
           }
           if (this.futureScheduleDateStrings.length > 0) {
@@ -123,7 +141,8 @@ export class RaportForDateComponent implements OnInit {
 
   }
   getDateDisplayStr(date: Date): string {
-    return TimeHandler.getDateDisplayStrFromFormat(date)
+    //return TimeHandler.getDateDisplayStrFromFormat(date)
+    return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());  
   }
 
   dateValidator(control: FormControl): { [s: string]: boolean } {

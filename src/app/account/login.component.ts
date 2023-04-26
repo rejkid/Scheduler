@@ -15,6 +15,8 @@ import { environment } from 'src/environments/environment';
         styleUrls: ['login.component.less'],
     })
 export class LoginComponent implements OnInit {
+    DATE_FORMAT = `${environment.dateFormat}`;
+
     form: FormGroup;
     loading = false;
     submitted = false;
@@ -33,7 +35,7 @@ export class LoginComponent implements OnInit {
             password: ['', Validators.required],
             dob: ['', [Validators.required , TimeHandler.dateValidator]],
         });
-        this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
+        this.form.get('dob').setValue(new Date());
     }
 
     // convenience getter for easy access to form fields
@@ -51,7 +53,7 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.login(this.f['email'].value, this.f['password'].value, moment(this.f['dob'].value).format( `${environment.dateFormat}`)/* TimeHandler.displayStr2LocalIsoString(this.f['dob'].value) */)
+        this.accountService.login(this.f['email'].value, this.f['password'].value, this.f['dob'].value)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -64,9 +66,5 @@ export class LoginComponent implements OnInit {
                     this.loading = false;
                 }
             });
-    }
-    getDisplayDate(date: Date): string {
-        var str = TimeHandler.getDateDisplayStrFromFormat(date);
-        return TimeHandler.getDateDisplayStrFromFormat(date);
     }
 }

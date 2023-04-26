@@ -11,6 +11,8 @@ import { environment } from 'src/environments/environment';
 
 @Component({ templateUrl: 'register.component.html' })
 export class RegisterComponent implements OnInit {
+    DATE_FORMAT = `${environment.dateFormat}`;
+    
     form: FormGroup;
     loading = false;
     submitted = false;
@@ -36,7 +38,7 @@ export class RegisterComponent implements OnInit {
         }, {
             validator: MustMatch('password', 'confirmPassword')
         });
-        this.form.get('dob').setValue(moment(new Date()).format( `${environment.dateFormat}`));
+        this.form.get('dob').setValue(new Date());
     }
 
     
@@ -55,7 +57,7 @@ export class RegisterComponent implements OnInit {
         }
 
         this.loading = true;
-        this.f['dob'].setValue(moment(this.f['dob'].value).format( `${environment.dateFormat}`));
+        this.f['dob'].setValue(this.f['dob'].value);
 
         this.accountService.register(this.form.value)
             .pipe(first())
@@ -70,9 +72,4 @@ export class RegisterComponent implements OnInit {
                 }
             });
     }
-    getDisplayDate(date: Date): string {
-        var str = TimeHandler.getDateDisplayStrFromFormat(date);
-        return TimeHandler.getDateDisplayStrFromFormat(date);
-    }
-
 }

@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { TimeHandler } from '../_helpers/time.handler';
 import { SchedulePoolElement } from '../_models/schedulepoolelement';
 import { UserFunction } from '../_models/userfunction';
+import * as moment from 'moment';
 import { AccountService, AlertService } from '../_services';
 
 @Component({
@@ -100,7 +101,9 @@ export class FloatingSchedulesComponent implements OnInit {
     return null;
   }
   getDisplayDate(date: Date): string {
-    var str = TimeHandler.getDateDisplayStrFromFormat(date);
-    return TimeHandler.getDateDisplayStrFromFormat(date);
+    // var str = TimeHandler.getDateDisplayStrFromFormat(date);
+    // return TimeHandler.getDateDisplayStrFromFormat(date);
+
+    return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());
   }
 }

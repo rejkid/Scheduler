@@ -37,19 +37,7 @@ const CUSTOM_MOMENT_FORMATS: NgxMatDateFormats = {
   },
 };
 
-export const MY_DATE_FORMATS = {
-  parse: {
-    dateInput: `${environment.dateFormat}`,
-  },
-  display: {
-    dateInput: `${environment.dateFormat}`,
-    monthYearLabel: 'MMMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY'
-  },
-};
-
-/* This is an alternative way of displaying Date in the format YYYY-MM-DD */
+/* This is an alternative way of displaying Date in the format `${environment.dateFormat}` */
 export class AppDateAdapter extends NativeDateAdapter {
 
   override format(date: Date, displayFormat: Object): string {
@@ -77,7 +65,6 @@ export class AppDateAdapter extends NativeDateAdapter {
     ReactiveFormsModule,
     AccountsRoutingModule,
     ScheduleModule,
-    //AppModule
 
     MaterialModule,
     MatSortModule,
@@ -110,13 +97,9 @@ export class AppDateAdapter extends NativeDateAdapter {
       provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS  
       
     },
-    {
-      provide: DateAdapter, useClass: AppDateAdapter
-    },
-    {
-      provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS
-    }
-    
+    // {
+    //   provide: DateAdapter, useClass: AppDateAdapter
+    // },
   ],
   exports: [
     MatPaginatorModule

@@ -34,6 +34,8 @@ const COLUMNS_SCHEMA = [
   },
 ]
 
+const VALID_TO_SERVICE_TIMEOUT = 1000 * 60 * 60 * 24; // 1 DAY
+
 @Component({
   selector: 'app-schedule',
   templateUrl: './schedule.component.html',
@@ -278,6 +280,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     var formDateStr = array[0];
     var formFunction = array[1];
 
+    var sDate = this.reverseScheduleLookup(formDateStr);
+
     for (let index = 0; index < this.schedules.length; index++) {
       var scheduleDate = new Date(this.schedules[index].date);
       var scheduleTime = scheduleDate.getTime();
@@ -292,8 +296,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
-      date: localISOTime as any,
-      newDate: localISOTime as any,
+      date: sDate/* localISOTime as any */,
+      newDate: sDate/* localISOTime as any */,
       required: true,
       deleting: false,
       userAvailability: true,
@@ -303,10 +307,21 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     return schedule;
   }
 
+  reverseScheduleLookup(dateStr: string) : Date {
+    for (let index = 0; index < this.poolElements.length; index++) {
+      const schedule = this.poolElements[index];
+      var  dStr = this.getDisplayDate(schedule.date);
+      if(dStr == dateStr)
+        return schedule.date;
+    } 
+    return null;
+  }
   isScheduleFromPast(schedule: Schedule) {
-    var snow = Date.now();
-    var stime = Date.parse(schedule.date as any);
-    if (stime < snow) {
+    var scheduleLocalDate = moment(moment.utc(schedule.date)).local().toDate(); // NEW CODE
+    var scheduleLocalDateMs = scheduleLocalDate.getTime(); // NEW CODE 
+
+    var localNowMs = Date.now();
+    if ((scheduleLocalDateMs - localNowMs) <  VALID_TO_SERVICE_TIMEOUT) {
       return true;
     }
     return false;
@@ -357,15 +372,23 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   }
 
   initSchedules(account: Account) {
+
     var schedules: Schedule[] = [];
-    var d = Date.now();
-    //   /* Filter out values that are older then now if checkbox this.f['allDates'].value is false
+
+    var dLocalNow = new Date();
+    var localNowMs = dLocalNow.getTime();
+    //  Filter out values that are older then now if checkbox this.f['allDates'].value is false
     for (let index = 0; index < account.schedules.length; index++) {
-      const element = account.schedules[index];
-      var date = Date.parse(element.date as any);
-      var cond = this.f['allDates'].value;
-      if (this.f['allDates'].value || date > d) {
-        schedules.push(element);
+      const schedule = account.schedules[index];
+      var serverDate = schedule.date;
+      var serverDateStr = serverDate.toString();
+
+      var scheduleLocalDate = moment(moment.utc(schedule.date)).local().toDate(); // NEW CODE
+      var scheduleLocalDateMs = scheduleLocalDate.getTime(); // NEW CODE
+
+      // Check the schedule is at least 1 day before now
+      if (this.f['allDates'].value || (scheduleLocalDateMs - localNowMs) >  VALID_TO_SERVICE_TIMEOUT ) {
+        schedules.push(schedule);
       }
     }
     this.schedules = schedules.slice();
@@ -377,7 +400,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   }
 
   getDisplayDate(date: Date): string {
-    return TimeHandler.getDateDisplayStrFromFormat(date)
+    return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());
   }
 
   private findScheduleIndexByScheduleId(scheduleId: string) {

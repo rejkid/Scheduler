@@ -24,10 +24,10 @@ import { MatSelectModule } from '@angular/material/select';
 
 const CUSTOM_MOMENT_FORMATS: NgxMatDateFormats = {
     parse: {
-      dateInput: 'YYYY-MM-DD',
+      dateInput: `${environment.dateFormat}`,
     },
     display: {
-      dateInput: 'YYYY-MM-DD',
+      dateInput: `${environment.dateFormat}`,
       monthYearLabel: 'MMM YYYY',
       dateA11yLabel: 'LL',
       monthYearA11yLabel: 'MMMM YYYY',

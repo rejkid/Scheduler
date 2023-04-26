@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  dateTimeFormat: 'YYYY-MM-DD HH:mm',
-  dateFormat: 'YYYY-MM-DD',
+  dateTimeFormat: 'DD-MM-YYYY HH:mm',
+  dateFormat: 'DD-MM-YYYY',
   
 
   //apiUrl: 'https://49.176.185.39:4000'
