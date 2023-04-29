@@ -229,7 +229,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           if (this.poolElements.length != 0) {
             this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
           }
-          //this.updateSchedulesAndPoolFromServer(this.id);
+          this.updateSchedulesAndPoolFromServer();
         },
         complete: () => {
           this.isAdding = false;
@@ -238,7 +238,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           this.addingSchedule = false;
           this.alertService.error(error);
           this.isAdding = false;
-          //this.updateSchedulesAndPoolFromServer(this.id);
+          this.updateSchedulesAndPoolFromServer();
         }
       });
   }
@@ -354,14 +354,14 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       .pipe(first())
       .subscribe({
         next: (account) => {
-          //this.updateSchedulesAndPoolFromServer(this.id);
+          this.updateSchedulesAndPoolFromServer();
 
           this.schedules = account.schedules;
           schedule.deleting = false;
         },
         error: error => {
           this.alertService.error(error);
-          //this.updateSchedulesAndPoolFromServer(this.id);
+          this.updateSchedulesAndPoolFromServer();
           schedule.deleting = false;
         }
       });
