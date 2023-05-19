@@ -2,7 +2,7 @@
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, finalize } from 'rxjs/operators';
+import { map, finalize, tap } from 'rxjs/operators';
 
 //import { environment } from '@environments/environment';
 import { Account, Role } from '../_models';
@@ -18,6 +18,7 @@ import { environment } from 'src/environments/environment';
 import { UserFunction } from '../_models/userfunction';
 import { SchedulePoolElement } from '../_models/schedulepoolelement';
 import { Schedule } from '../_models/schedule';
+import * as moment from 'moment';
 
 
 const baseUrl = `${environment.apiUrl}/accounts`;
@@ -49,6 +50,16 @@ export class AccountService {
             }));
     }
 
+    /* An alternate way*/
+/*     login(email: string, password: string, dob: string) {
+        return this.http.post<Account>(`${baseUrl}/authenticate`, { email, password, dob }, { withCredentials: true })
+            .pipe(tap(account => {
+                this.accountSubject.next(account);
+                this.startRefreshTokenTimer();
+                return account;
+            }))
+    }
+ */
     logout() {
         this.http.post<any>(`${baseUrl}/revoke-token`, {}, { withCredentials: true }).subscribe();
         this.stopRefreshTokenTimer();
