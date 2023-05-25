@@ -59,7 +59,7 @@ export class FloatingSchedulesComponent implements OnInit {
       });
   }
 
-  onDeletePoolElement(event: any, scheduleId: string, email: string, userFunction: string) { // i is schedule index
+  onDeletePoolElement(event: any, scheduleId: string, email: string, userFunction: string) { 
     let poolElement: SchedulePoolElement = this.getPoolElementById(scheduleId);
     if (poolElement == null)
       return; // Nothing to delete, should never happen
