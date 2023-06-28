@@ -6,7 +6,8 @@
                 <input type="checkbox" (change)="onCheckboxChange($event)" formControlName="allDates" id="allDates"
                     name="allDates" value="" class="ms-5">
                 <label for="allDates" class="ps-2">All</label><br>
-                <select #dates formControlName="dates" class="form-select" (ngModelChange)="onSelected($event)">
+                <select #dates formControlName="dates" class="form-select" (ngModelChange)="onSelected($event)" >Choose
+                    <option value="" selected hidden>Choose here</option>
                     <option *ngFor="let date of futureScheduleDateStrings">{{date}}</option>
                 </select>
                 <div *ngIf="f['dates'].dirty && f['dates'].hasError('invalidDate')" class="alert alert-danger">Date must
@@ -15,7 +16,8 @@
                 </div>
             </div>
 
-            <fieldset *ngFor="let team of teams">
+            <fieldset *ngFor="let team of teams | orderByDate: 'function': 'asc' ">
+            <!-- <fieldset *ngFor="let team of teams"> -->
                 <legend>{{team.function}} :</legend>
                 <div class="border border-primary">
 

@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { ScheduleDateTimes } from '../_models/scheduledatetimes';
 import { ScheduleDateTime } from '../_models/scheduledatetime';
+import { OrderByDatePipe } from '../order-by-date.pipe';
 
 
 @Component({
@@ -43,6 +44,7 @@ export class RaportForDateComponent implements OnInit {
   }
   onCheckboxChange(event: any) {
     this.getAllDates();
+    this.teams = []; // Remove all current teams - we have new set of dates
   }
 
   get f() {
@@ -62,7 +64,12 @@ export class RaportForDateComponent implements OnInit {
 
   onSelected(value: any): void {
     this.dateSelected = value;
-    if (this.futureScheduleDateStrings.length <= 0 )
+    if (this.futureScheduleDateStrings.length <= 0)
+      return;
+
+    var selectedDate = this.form.get('dates').value;
+    var selectedDateInParseFormat = moment(selectedDate, `${environment.dateTimeFormat}`);
+    if (isNaN(Date.parse(selectedDateInParseFormat.toString()/* selectedDate */))) // If Date is invalid then return (e.g. "Choose here")
       return;
 
     this.users = [];
@@ -74,13 +81,6 @@ export class RaportForDateComponent implements OnInit {
         next: (dateFunctionTeams: DateFunctionTeams) => {
           this.teams = dateFunctionTeams.dateFunctionTeams;
 
-          this.teams.sort(function (a, b) {
-            if (a.function > b.function) return 1
-            if (a.function < b.function) return -1
-            return 0
-          });
-
-          
           for (let index = 0; index < this.teams.length; index++) {
             var user: User[] = this.teams[index].users
             console.log(this.teams[index]);
@@ -116,20 +116,16 @@ export class RaportForDateComponent implements OnInit {
             if (a < b) return -1
             return 0
           });
+
           for (let index = 0; index < this.list.length; index++) {
-            const scheduleServerDate = this.list[index];
             var tNowLocalMs = Date.now();
-            var tElement = Date.parse(scheduleServerDate as any);
+            const scheduleServerDate = this.list[index];
             var scheduleLocalDate = moment(moment.utc(scheduleServerDate)).local().toDate();
             var scheduleLocalMs = scheduleLocalDate.getTime();
 
             if (this.f['allDates'].value || scheduleLocalMs > tNowLocalMs) {
-
               this.futureScheduleDateStrings.push(this.getDateDisplayStr(scheduleServerDate));
             }
-          }
-          if (this.futureScheduleDateStrings.length > 0) {
-            this.form.get('dates').setValue(this.futureScheduleDateStrings.at(0));
           }
 
           this.isLoaded = true;
@@ -141,7 +137,6 @@ export class RaportForDateComponent implements OnInit {
 
   }
   getDateDisplayStr(date: Date): string {
-    //return TimeHandler.getDateDisplayStrFromFormat(date)
     return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());  
   }
 

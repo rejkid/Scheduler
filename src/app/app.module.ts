@@ -29,6 +29,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
+import { OrderByDatePipe } from './order-by-date.pipe';
+
 @NgModule({
     imports: [
         CommonModule,
@@ -65,6 +67,7 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from '@angular-mat
         HomeComponent,
         RaportForDateComponent,
         FloatingSchedulesComponent,
+        OrderByDatePipe,
     ],
     providers: [
         { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AccountService] },

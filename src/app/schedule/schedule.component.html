@@ -35,6 +35,8 @@
     <span class="spinner-border spinner-border-lg align-center"></span>
 </div>
 
+<div class="color-sample mat-elevation-z3" 
+         [style.background-color]="color">
 <div class="border">
     <mat-table #table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="date">
@@ -64,6 +66,7 @@
 
     <mat-paginator #paginator [length]="schedules.length" [pageSizeOptions]="[5, 10, 30, 50]" showFirstLastButtons>
     </mat-paginator>
+</div>
 </div>
 
 <div class="mb-3">
