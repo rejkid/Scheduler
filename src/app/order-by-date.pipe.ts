@@ -10,6 +10,7 @@ export class OrderByDatePipe implements PipeTransform {
       return array;
     }
 
+    // Use index signatures
     if (property == "date") {
       array.sort((a, b) => {
         const dateA = new Date(a[property]);

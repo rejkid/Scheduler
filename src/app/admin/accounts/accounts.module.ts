@@ -22,6 +22,7 @@ import { NgxMatDateAdapter, NgxMatDateFormats, NgxMatDatetimePickerModule, NGX_M
 import { NgxMatMomentAdapter, NgxMatMomentModule, NGX_MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular-material-components/moment-adapter';
 import { environment } from 'src/environments/environment';
 import { MatSelectModule } from '@angular/material/select';
+import { DOBModule } from 'src/app/dob/dob.module';
 
 
 // If using Moment
@@ -78,6 +79,7 @@ export class AppDateAdapter extends NativeDateAdapter {
     NgxMatDatetimePickerModule,
     NgxMatMomentModule,
     MatSelectModule,
+    DOBModule
   ],
   declarations: [
     ListComponent,

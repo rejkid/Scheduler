@@ -17,4 +17,5 @@ export class Account {
     availability: boolean;
     password: string;
     confirmPassword : string
+    isVerified : boolean
 }

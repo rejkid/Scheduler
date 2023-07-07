@@ -4,25 +4,26 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th style="width:30%">Name</th>
-            <th style="width:30%">
+            <th style="width:10%">Name</th>
+            <th style="width:10%">
                 <img src="./assets/images/email.png" alt=""/>
                 Email
             </th>
-            <th style="width:30%">Role</th>
-            <th style="width:10%"></th>
+            <th style="width:5%">Role</th>
+            <th style="width:5%">Verified</th>
+            <th style="width:15%"></th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let account of accounts">
             <td>{{account.title}} {{account.firstName}} {{account.lastName}}</td>
-            <td>{{account.email}}
-            </td>
+            <td>{{account.email}}</td>
             <td>{{account.role}}</td>
+            <td><input type="checkbox" [checked]="account.isVerified" [disabled]="true"/></td>
             <td style="white-space: nowrap" >
-                <a routerLink="edit/{{account.id}}" class="btn btn-sm btn-primary mr-1" >Edit</a>
-                <a routerLink="function/{{account.id}}" class="btn btn-sm btn-primary mr-1" *ngIf="account.role !=RoleAdminEnum">Duties</a>
-                <a routerLink="schedule/{{account.id}}" class="btn btn-sm btn-primary mr-1" *ngIf="account.role !=RoleAdminEnum">Schedule</a>
+                <button routerLink="edit/{{account.id}}" [disabled]="!account.isVerified" class="btn btn-sm btn-primary mr-1" >Edit</button>
+                <button routerLink="function/{{account.id}}" class="btn btn-sm btn-primary mr-1" [disabled]="!account.isVerified" *ngIf="account.role !=RoleAdminEnum">Duties</button>
+                <button routerLink="schedule/{{account.id}}" class="btn btn-sm btn-primary mr-1" [disabled]="!account.isVerified" *ngIf="account.role !=RoleAdminEnum">Schedule</button>
                 <button (click)="deleteAccount(account.id)" class="btn btn-sm btn-danger btn-delete-account" [disabled]="account.isDeleting" >
                     <span *ngIf="account.isDeleting" class="spinner-border spinner-border-sm"></span>
                     <span *ngIf="!account.isDeleting">Delete</span>

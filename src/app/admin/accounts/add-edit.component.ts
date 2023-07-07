@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
@@ -10,9 +10,12 @@ import { AccountService, AlertService } from 'src/app/_services';
 import { UserFunction } from 'src/app/_models/userfunction';
 import { Account, Role } from 'src/app/_models';
 import { environment } from 'src/environments/environment';
+import { DOBComponent } from 'src/app/dob/dob.component';
 
 @Component({ templateUrl: 'add-edit.component.html' })
-export class AddEditComponent implements OnInit {
+export class AddEditComponent implements OnInit, AfterViewInit {
+    @ViewChild(DOBComponent) dob : DOBComponent;
+
     DATE_FORMAT = `${environment.dateFormat}`;
 
     form: FormGroup;
@@ -34,6 +37,9 @@ export class AddEditComponent implements OnInit {
     ) {
         this.roles = Object.values(Role).filter(value => typeof value === 'string') as string[]
 
+    }
+    ngAfterViewInit(): void {
+        
     }
 
     userFunctionAdded(functions: UserFunction[]) {
@@ -68,7 +74,7 @@ export class AddEditComponent implements OnInit {
                         // Edit mode
                         this.account = x; // initial account
                         this.form.patchValue(x);
-                        this.form.get('dob').setValue(TimeHandler.convertServerDate2Local(this.account.dob)); // Overwrite patch for DOB
+                        this.dob.setDOB(TimeHandler.convertServerDate2Local(this.account.dob));
                     },
                     error: error => {
                         console.error(error);
@@ -77,7 +83,6 @@ export class AddEditComponent implements OnInit {
         } else {
             // Add mode
             this.form.get('role').setValue(this.roles[0]);
-            this.form.get('dob').setValue(new Date());
         }
     }
 
@@ -89,6 +94,8 @@ export class AddEditComponent implements OnInit {
 
         // reset alerts on submit
         this.alertService.clear();
+
+        this.form.get('dob').setValue(this.dob.getDOB());
 
         // stop here if form is invalid
         if (this.form.invalid) {
@@ -105,11 +112,7 @@ export class AddEditComponent implements OnInit {
     }
 
     private createAccount() {
-        // var formDateStr = this.getDateDisplayStr(this.f['dob'].value);
-        // formDateStr = TimeHandler.getDatetimeLocaleFromDisplayDate(this.f['dob'].value);
-        // var localISOTime = TimeHandler.displayStr2LocalIsoString(formDateStr);
 
-        //this.f['dob'].setValue(/* this.f['dob'].value *//* moment(this.f['dob'].value).format(`${environment.dateFormat}`) */);
         this.accountService.create(this.form.value)
             .pipe(first())
             .subscribe({
@@ -125,7 +128,6 @@ export class AddEditComponent implements OnInit {
     }
 
     private updateAccount() {
-        //this.f['dob'].setValue(moment(this.f['dob'].value).format(`${environment.dateFormat}`));
         this.accountService.update(this.id, this.form.value/* this.account */)
             .pipe(first())
             .subscribe({
