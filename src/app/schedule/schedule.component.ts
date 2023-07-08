@@ -254,7 +254,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
             .pipe(first())
             .subscribe({
               next: (pollElements) => {
-                console.log(pollElements);
+                console.log("Pool Elements:"+pollElements);
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
