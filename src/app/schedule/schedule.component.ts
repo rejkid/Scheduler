@@ -159,7 +159,12 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
+    //this.id = this.route.snapshot.params['id'];
+
+    this.accountService.account.subscribe(x => {
+      this.id = x.id;
+  });
+
     this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
 
     this.form = this.formBuilder.group({
