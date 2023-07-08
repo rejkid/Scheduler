@@ -71,6 +71,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
   columnsSchema: any = COLUMNS_SCHEMA;
   public color: ThemePalette = 'primary';
+  connection : signalR.HubConnection;
 
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
@@ -85,19 +86,22 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
 
     var tempStr = environment.baseUrl;
-    const connection = new signalR.HubConnectionBuilder()
+    /* const connection */this.connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
       .withUrl(environment.baseUrl + '/update')
       .build();
 
-    connection.start().then(function () {
+      this.connection.start().then(function () {
       console.log('SignalR Connected!');
     }).catch(function (err) {
       return console.error(err.toString());
     });
 
-    connection.on("SendUpdate", (id: number) => {
-      this.updateSchedulesAndPoolFromServer();
+    this.connection.on("SendUpdate", (id: number) => {
+      if(id != parseInt(this.id)) {
+        console.log("Error");
+      }
+      //this.updateSchedulesAndPoolFromServer();
     });
   }
 
@@ -162,8 +166,10 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     //this.id = this.route.snapshot.params['id'];
 
     this.accountService.account.subscribe(x => {
-      this.id = x.id;
-  });
+      if (x != null) {
+        this.id = x.id;
+      }
+    });
 
     this.isAddScheduleMode = this.isLoggedAsAdmin; // If not admin then we are adding available dates
 
