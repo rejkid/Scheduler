@@ -6,6 +6,7 @@ export class Schedule {
     userAvailability: boolean;
 
     userFunction : string;
+    scheduleGroup : string;
     newUserFunction : string;
     deleting : boolean;
 }

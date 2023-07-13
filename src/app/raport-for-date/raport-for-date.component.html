@@ -26,6 +26,7 @@
                             <tr>
                                 <th style="width:30%">Duty</th>
                                 <th style="width:30%">User</th>
+                                <th style="width:30%">Team</th>
                                 <th style="width:10%"></th>
                             </tr>
                         </thead>
@@ -33,6 +34,7 @@
                             <tr *ngFor="let user of team.users">
                                 <td>{{user.function}} </td>
                                 <td>{{user.firstName}} </td>
+                                <td>{{user.scheduleGroup}} </td>
                             </tr>
 
                         </tbody>

@@ -8,5 +8,6 @@ export class User {
     secondName: string;
     email: string;
     function: string;
+    scheduleGroup : string;
     date: Date;
 }

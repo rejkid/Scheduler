@@ -19,6 +19,7 @@ import { interval, timer } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import * as signalR from '@microsoft/signalr';
+import { UpperCasePipe } from '@angular/common';
 
 const COLUMNS_SCHEMA = [
   {
@@ -30,6 +31,11 @@ const COLUMNS_SCHEMA = [
     key: "userFunction",
     type: "text",
     label: "Duty"
+  },
+  {
+    key: "scheduleGroup",
+    type: "text",
+    label: "Group"
   },
   {
     key: "action",
@@ -84,7 +90,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private uppercasePipe: UpperCasePipe) {
 
     this.accountService = accountService;
     this.onScheduledAdded = new EventEmitter();
@@ -127,6 +134,12 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
               if (this.userFunctions.length > 0) {
                 this.form.get('function').setValue(this.userFunctions[0].userFunction);
               }
+              if (!this.isCleaner) {
+                this.form.get('cleanerGroup').disable();
+              } else {
+                this.form.get('cleanerGroup').addValidators(Validators.required);
+                this.form.get('cleanerGroup').addValidators(Validators.minLength(1));
+              }
 
               this.account = account;
               this.scheduleIndexer = account.schedules.length > 0 ? parseInt(account.schedules[account.schedules.length - 1].id) : 0;
@@ -147,6 +160,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
     this.form = this.formBuilder.group({
       scheduledDate: ['', Validators.required],
+      cleanerGroup: ['', ] ,
       function: ['', [Validators.required, this.functionValidator]],
     });
   }
@@ -166,7 +180,13 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     }
     return null;
   }
-
+  onDutyChanged(event: any) {
+    if(event.value == "Cleaner") {
+      this.form.get('cleanerGroup').enable();
+    } else {
+      this.form.get('cleanerGroup').disable();
+    }
+  }
   // convenience getter for easy access to form fields
   get f() { return this.form.controls; }
 
@@ -179,6 +199,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
     // stop here if form is invalid
     if (this.form.invalid) {
+      this.form.markAsTouched(); //markAllAsTouched();
+      this.f['cleanerGroup'].markAsTouched();
       return;
     }
 
@@ -205,6 +227,12 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       });
   }
 
+  onInputFunc(date: HTMLInputElement, event : any ) {
+    var k = event.key;
+    var val = this.uppercasePipe.transform(date.value)
+    var retVal = this.uppercasePipe.transform(event.key);
+    return retVal;
+  }
   createSchedule(dateStr: string, functionStr: string): Schedule {
     var formDate = new Date(this.form.controls[dateStr].value);
     formDate.setSeconds(0); // Re-set seconds to zero
@@ -221,9 +249,14 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       }
     }
 
-    var newDate : Date = this.form.controls[dateStr].value.toDate();
+    var test = this.form.controls[dateStr].value;
+    var newDate: Date = new Date(this.form.controls[dateStr].value);
     newDate.setSeconds(0);
 
+    var scheduleGroupVal = "";
+    if (this.form.controls['cleanerGroup'].enabled) {
+      scheduleGroupVal = this.form.controls['cleanerGroup'].value;
+    }
     var schedule: Schedule = {
       id: (++this.scheduleIndexer).toString(),
       date: newDate,
@@ -231,18 +264,18 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
       required: true,
       deleting: false,
       userAvailability: true,
+      scheduleGroup: scheduleGroupVal,
       userFunction: this.form.controls[functionStr].value,
       newUserFunction: this.form.controls[functionStr].value
     }
     return schedule;
   }
-  onDeleteSchedule(i: string) { // i is table index
+  onDeleteSchedule(i: string, schedule: Schedule, row : any) { // i is table index
     var found: number = -1;
     var schedule2Delete: Schedule = null;
 
     for (let index = 0; index < this.schedules.length; index++) {
-      var scheduledIndex = this.schedules[index].id;
-      if (scheduledIndex === i) {
+      if (index === parseInt(i)) {
         found = index; // array index not a table
         schedule2Delete = this.schedules[index];
         schedule2Delete.deleting = true;
@@ -307,6 +340,11 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
     this.updateSchedules(schedule);
   }
+
+  onCleanerGroupPressed(event : any) {
+    console.log("You entered: ", event.target.value);
+  }
+
   updateSchedules(schedule: Schedule) {
     this.isUpdating = true;
     // reset alerts on submit
@@ -340,11 +378,16 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
 
   }
-  // convertServerDate2Local(date: Date): Date {
-  //   return TimeHandler.convertServerDate2Local(date);
-  // }
-
   get isAdmin() {
     return this.account.role == Role.Admin;
+  }
+  get isCleaner() {
+    if(this.form == undefined)
+     return false;
+    return this.form.get('function').value === "Cleaner"
+  }
+
+  convertServerDate2LocalStr(date: Date): string {
+    return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());
   }
 }

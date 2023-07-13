@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 //import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, UpperCasePipe } from '@angular/common';
 
 import { AccountsRoutingModule } from './accounts-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -85,10 +85,14 @@ export class AppDateAdapter extends NativeDateAdapter {
     ListComponent,
     AddEditComponent,
     FunctionComponent,
-    ScheduleAllocatorComponent
+    ScheduleAllocatorComponent,
+    
 
   ],
   providers: [
+    {
+      provide: UpperCasePipe
+    },
     {
       provide: NgxMatDateAdapter,
       useClass: NgxMatMomentAdapter, //Moment adapter

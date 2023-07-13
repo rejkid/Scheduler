@@ -101,7 +101,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       if(id != parseInt(this.id)) {
         console.log("Error");
       }
-      //this.updateSchedulesAndPoolFromServer();
+      /* TODO This causes somehow call to `GetById(int id)` with the id different then this.id */
+      //this.updateSchedulesAndPoolFromServer(); 
     });
   }
 
@@ -312,6 +313,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       required: true,
       deleting: false,
       userAvailability: true,
+      scheduleGroup:  this.form.controls['scheduledGroup'].value,
       userFunction: formFunction,
       newUserFunction: formFunction
     }

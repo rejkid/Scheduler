@@ -45,7 +45,4 @@ export class TimeHandler {
     static convertServerDate2Local(date: Date): Date {
         return moment(moment.utc(date)).local().toDate();
     }
-    // static convertServerDateTime2Local(date: Date): Date {
-    //     return moment(moment.utc(date)).local().toDate();
-    // }
 }
