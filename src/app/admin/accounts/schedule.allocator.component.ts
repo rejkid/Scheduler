@@ -270,18 +270,18 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     }
     return schedule;
   }
-  onDeleteSchedule(i: string, schedule: Schedule, row : any) { // i is table index
-    var found: number = -1;
-    var schedule2Delete: Schedule = null;
+  onDeleteSchedule(i: string, schedule2Delete: Schedule, row : any) { // i is table index
+    // var found: number = -1;
+    // var schedule2Delete: Schedule = null;
 
-    for (let index = 0; index < this.schedules.length; index++) {
-      if (index === parseInt(i)) {
-        found = index; // array index not a table
-        schedule2Delete = this.schedules[index];
-        schedule2Delete.deleting = true;
-        break;
-      }
-    }
+    // for (let index = 0; index < this.schedules.length; index++) {
+    //   if (index === parseInt(i)) {
+    //     found = index; // array index not a table
+    //     schedule2Delete = this.schedules[index];
+    //     schedule2Delete.deleting = true;
+    //     break;
+    //   }
+    // }
 
     schedule2Delete.deleting = true;
     this.accountService.deleteSchedule(this.account.id, schedule2Delete)

@@ -28,6 +28,11 @@ const COLUMNS_SCHEMA = [
     label: "Duty"
   },
   {
+    key: "scheduleGroup",
+    type: "text",
+    label: "Group"
+  },
+  {
     key: "action",
     type: "button",
     label: "Action"
@@ -71,7 +76,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = COLUMNS_SCHEMA.map((col) => col.key);
   columnsSchema: any = COLUMNS_SCHEMA;
   public color: ThemePalette = 'primary';
-  connection : signalR.HubConnection;
+  connection: signalR.HubConnection;
 
   constructor(accountService: AccountService,
     private route: ActivatedRoute,
@@ -91,18 +96,19 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       .withUrl(environment.baseUrl + '/update')
       .build();
 
-      this.connection.start().then(function () {
+    this.connection.start().then(function () {
       console.log('SignalR Connected!');
     }).catch(function (err) {
       return console.error(err.toString());
     });
 
     this.connection.on("SendUpdate", (id: number) => {
-      if(id != parseInt(this.id)) {
+      if (id != parseInt(this.id)) {
         console.log("Error");
       }
-      /* TODO This causes somehow call to `GetById(int id)` with the id different then this.id */
-      //this.updateSchedulesAndPoolFromServer(); 
+      /* TODO This used to cause a call to `GetById(int id)` with the id different then this.id 
+      Currently I am testing if this is still a problem after fix has been applied*/
+      this.updateSchedulesAndPoolFromServer(); 
     });
   }
 
@@ -139,9 +145,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
                   .subscribe({
                     next: (pollElements) => {
                       this.poolElements = pollElements.schedulePoolElements;
-
                       if (this.poolElements.length != 0) {
-                        this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+                        this.form.get('availableSchedule4Function').setValue(this.getConcatPoolElement(this.poolElements[0]));
                       }
 
                     },
@@ -164,8 +169,6 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    //this.id = this.route.snapshot.params['id'];
-
     this.accountService.account.subscribe(x => {
       if (x != null) {
         this.id = x.id;
@@ -179,6 +182,16 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       allDates: [false, '',]
     });
   }
+
+  private getConcatPoolElement(poolElement: SchedulePoolElement): string {
+    if (this.poolElements[0].userFunction == "Cleaner") {
+      return this.getDisplayDate(poolElement.date) + "/" + poolElement.userFunction + "/" + poolElement.scheduleGroup;
+    } else {
+      return this.getDisplayDate(poolElement.date) + "/" + poolElement.userFunction;
+    }
+  }
+
+
   ngOnDestroy() {
     console.log("Called");
   }
@@ -239,7 +252,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
 
           if (this.poolElements.length != 0) {
-            this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+            this.form.get('availableSchedule4Function').setValue(this.getConcatPoolElement(this.poolElements[0]));
           }
           this.updateSchedulesAndPoolFromServer();
         },
@@ -266,11 +279,11 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
             .pipe(first())
             .subscribe({
               next: (pollElements) => {
-                console.log("Pool Elements:"+pollElements);
+                console.log("Pool Elements:" + pollElements);
                 this.poolElements = pollElements.schedulePoolElements;
 
                 if (this.poolElements.length != 0) {
-                  this.form.get('availableSchedule4Function').setValue(this.getDisplayDate(this.poolElements[0].date) + "/" + this.poolElements[0].userFunction);
+                  this.form.get('availableSchedule4Function').setValue(this.getConcatPoolElement(this.poolElements[0]));
                 }
               },
               error: error => {
@@ -291,6 +304,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     var formDate = Date.parse(dateTimeStr);
     var formDateStr = array[0];
     var formFunction = array[1];
+    var cleanerGroup = array[2];
 
     var sDate = this.reverseScheduleLookup(formDateStr);
 
@@ -313,20 +327,20 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       required: true,
       deleting: false,
       userAvailability: true,
-      scheduleGroup:  this.form.controls['scheduledGroup'].value,
+      scheduleGroup: cleanerGroup,
       userFunction: formFunction,
       newUserFunction: formFunction
     }
     return schedule;
   }
 
-  reverseScheduleLookup(dateStr: string) : Date {
+  reverseScheduleLookup(dateStr: string): Date {
     for (let index = 0; index < this.poolElements.length; index++) {
       const schedule = this.poolElements[index];
-      var  dStr = this.getDisplayDate(schedule.date);
-      if(dStr == dateStr)
+      var dStr = this.getDisplayDate(schedule.date);
+      if (dStr == dateStr)
         return schedule.date;
-    } 
+    }
     return null;
   }
   isScheduleFromPast(schedule: Schedule) {
@@ -334,35 +348,14 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     var scheduleLocalDateMs = scheduleLocalDate.getTime(); // NEW CODE 
 
     var localNowMs = Date.now();
-    if ((scheduleLocalDateMs - localNowMs) <  VALID_TO_SERVICE_TIMEOUT) {
+    if ((scheduleLocalDateMs - localNowMs) < VALID_TO_SERVICE_TIMEOUT) {
       return true;
     }
     return false;
   }
 
-  onDeleteSchedule(event: any, scheduleId: string) { // i is schedule index
-
-    var found: number = -1;
-    var schedule2Delete = null;
-
-    for (let index = 0; index < this.schedules.length; index++) {
-      var scheduledIndex = this.schedules[index].id;
-      if (scheduledIndex === scheduleId) {
-        found = index; // array index not a schedule
-        schedule2Delete = this.schedules[index];
-        break;
-      }
-    }
-    const index = this.findScheduleIndexByScheduleId(scheduleId);
-    var schedule: Schedule = null;
-
-    if (index == -1) {
-      return;
-    }
-
-    schedule = this.schedules[index];
-    schedule.deleting = true;
-
+  onDeleteSchedule(event: any, scheduleId: string, indx: string, schedule2Delete: Schedule) { // i is schedule index
+    schedule2Delete.deleting = true;
     this.accountService.MoveSchedule2Pool(this.account.id, schedule2Delete)
       .pipe(first())
       .subscribe({
@@ -370,12 +363,12 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
           this.updateSchedulesAndPoolFromServer();
 
           this.schedules = account.schedules;
-          schedule.deleting = false;
+          schedule2Delete.deleting = false;
         },
         error: error => {
           this.alertService.error(error);
           this.updateSchedulesAndPoolFromServer();
-          schedule.deleting = false;
+          schedule2Delete.deleting = false;
         }
       });
 
@@ -400,7 +393,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       var scheduleLocalDateMs = scheduleLocalDate.getTime(); // NEW CODE
 
       // Check the schedule is at least 1 day before now
-      if (this.f['allDates'].value || (scheduleLocalDateMs - localNowMs) >  VALID_TO_SERVICE_TIMEOUT ) {
+      if (this.f['allDates'].value || (scheduleLocalDateMs - localNowMs) > VALID_TO_SERVICE_TIMEOUT) {
         schedules.push(schedule);
       }
     }
@@ -414,18 +407,6 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
   getDisplayDate(date: Date): string {
     return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());
-  }
-
-  private findScheduleIndexByScheduleId(scheduleId: string) {
-    var found: number = -1;
-    for (let index = 0; index < this.schedules.length; index++) {
-      var scheduledIndex = this.schedules[index].id;
-      if (scheduledIndex === scheduleId) {
-        found = index; // array index not a table
-        break;
-      }
-    }
-    return found;
   }
 
   get isAdmin() {

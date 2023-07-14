@@ -74,7 +74,9 @@ export class RaportForDateComponent implements OnInit {
 
     this.users = [];
     
-    var date = this.reverseScheduleLookup(value);
+    const array = selectedDate.split("/");
+
+    var date = this.reverseScheduleLookup(array[0]);
     this.accountService.GetTeamsByFunctionForDate(date)
       .pipe(first())
       .subscribe({
@@ -135,6 +137,11 @@ export class RaportForDateComponent implements OnInit {
         }
       });
 
+  }
+  getDayStrFromDate(dateStr: string): string {
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var date = TimeHandler.displayStr2Date(dateStr);
+    return days[date.getDay()];  
   }
   getDateDisplayStr(date: Date): string {
     return TimeHandler.getDateDisplayStrFromFormat(moment(moment.utc(date)).local().toDate());  

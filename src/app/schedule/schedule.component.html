@@ -9,7 +9,12 @@
                 <label>Date/Time</label>
                 <select #element formControlName="availableSchedule4Function" class="form-select">
                     <option *ngFor="let item of poolElements">
+                        <span *ngIf='item.userFunction === "Cleaner"' class="spinner-border spinner-border-sm mr-1">
+                        {{ getDisplayDate(item.date) }}/{{ item.userFunction }}/{{ item.scheduleGroup }}
+                    </span>
+                        <span *ngIf='item.userFunction !="Cleaner"' class="spinner-border spinner-border-sm mr-1">
                         {{ getDisplayDate(item.date) }}/{{ item.userFunction }}
+                    </span>
                     </option>
                 </select>
             </div>
@@ -49,10 +54,15 @@
             <mat-cell *matCellDef="let schedule">{{schedule.userFunction}}
             </mat-cell>
         </ng-container>
+        <ng-container matColumnDef="scheduleGroup">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Team </mat-header-cell>
+            <mat-cell *matCellDef="let schedule">{{schedule.scheduleGroup}}
+            </mat-cell>
+        </ng-container>
         <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <button class="btn btn-sm btn-danger btn-delete-account" type="button" (click)="onDeleteSchedule($event, row.id)"
+            <mat-cell *matCellDef="let i = index; let schedule; let row">
+                <button class="btn btn-sm btn-danger btn-delete-account" type="button" (click)="onDeleteSchedule($event, row, i, schedule)"
                     [ngClass]="{ 'disabled': isScheduleFromPast(row) || row.deleting}">
                     <span *ngIf="row.deleting" class="spinner-border spinner-border-sm mr-1"></span> Delete
                 </button>

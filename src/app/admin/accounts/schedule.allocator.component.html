@@ -12,7 +12,7 @@
         <div class="container">
             <div class="row">
                 <div class="mb-3 col-6">
-                    <mat-form-field appearance="outline" hideRequiredMarker>
+                    <mat-form-field appearance="outline" >
                         <mat-label>Schedule</mat-label>
                         <input formControlName="scheduledDate" #ref matInput [ngxMatDatetimePicker]="picker"
                             placeholder="Choose a date" [disabled]="false" required />
@@ -31,11 +31,11 @@
         <div class="container">
             <div class="row equal">
                 <div class="mb-3 col-3">
-                    <mat-form-field appearance="outline" hideRequiredMarker>
+                    <mat-form-field appearance="outline" >
                         <mat-label>Duty</mat-label>
                         <mat-select formControlName="function"
                             [ngClass]="{ 'is-invalid': submitted && f['function'].errors }"
-                            (selectionChange)="onDutyChanged($event)">
+                            (selectionChange)="onDutyChanged($event)" required>
                             <mat-option *ngFor="let item of userFunctions" [value]=item.userFunction>
                                 {{ item.userFunction }}
                             </mat-option>
@@ -47,10 +47,10 @@
                     </mat-form-field>
                 </div>
                 <div class="mb-3 col-3" *ngIf=isCleaner>
-                    <mat-form-field appearance="outline" hideRequiredMarker>
-                        <mat-label>Group</mat-label>
+                    <mat-form-field appearance="outline" >
+                        <mat-label>Team</mat-label>
                         <input type="text" #data matInput formControlName="cleanerGroup" matInput
-                            placeholder="Specify a group" oninput="this.value = this. value.toUpperCase()" />
+                            placeholder="Specify a group" oninput="this.value = this. value.toUpperCase()" required/>
                         <mat-error *ngIf="f['cleanerGroup'].enabled && f['cleanerGroup'].hasError('required')">The field
                             is required</mat-error>
                     </mat-form-field>
@@ -113,10 +113,15 @@
         </ng-container>
 
         <ng-container matColumnDef="scheduleGroup">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Group </mat-header-cell>
-            <mat-cell *matCellDef="let i = index">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Team </mat-header-cell>
+            <mat-cell *matCellDef="let i = index;let schedule">
                 <!--mat-form-field appearance="outline"-->
-                    <input type="text" #data matInput placeholder="None" [value]="schedules[i].scheduleGroup" (keydown.enter)="onCleanerGroupPressed($event)" readonly/>
+                <span *ngIf="schedule.scheduleGroup == undefined">
+                    <input type="text" #data matInput placeholder="None"  [value]="" (keydown.enter)="onCleanerGroupPressed($event)" readonly/>
+                </span>
+                <span *ngIf="schedule.scheduleGroup != undefined">
+                    <input type="text" #data matInput placeholder="None"  [value]="schedule.scheduleGroup" (keydown.enter)="onCleanerGroupPressed($event)" readonly/>
+                </span>
                 <!--/mat-form-field-->
             </mat-cell>
         </ng-container>
@@ -126,7 +131,7 @@
             <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
             <mat-cell *matCellDef="let i = index; let schedule; let row">
                 <button mat-raised-button color="warn" (click)="onDeleteSchedule(i, schedule, row)">
-                    <span *ngIf="schedules[i].deleting" class="spinner-border spinner-border-sm mr-1"></span>Delete
+                    <span *ngIf="schedule.deleting" class="spinner-border spinner-border-sm mr-1"></span>Delete
                 </button>
             </mat-cell>
         </ng-container>

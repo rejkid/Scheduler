@@ -10,4 +10,5 @@ export class SchedulePoolElement {
     userAvailability: Boolean;
     userFunction: string;
     deleting : boolean;
+    scheduleGroup : string;
 }

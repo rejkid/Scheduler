@@ -8,7 +8,7 @@
                 <label for="allDates" class="ps-2">All</label><br>
                 <select #dates formControlName="dates" class="form-select" (ngModelChange)="onSelected($event)" >Choose
                     <option value="" selected hidden>Choose here</option>
-                    <option *ngFor="let date of futureScheduleDateStrings">{{date}}</option>
+                    <option *ngFor="let date of futureScheduleDateStrings">{{date}}/{{getDayStrFromDate(date)}}</option>
                 </select>
                 <div *ngIf="f['dates'].dirty && f['dates'].hasError('invalidDate')" class="alert alert-danger">Date must
                     be
