@@ -106,7 +106,7 @@ export class FunctionComponent implements OnInit {
       .subscribe({
         next: (account) => {
           this.userFunctions = account.userFunctions.slice();
-          this.alertService.success('Update successful', { keepAfterRouteChange: true });
+          //this.alertService.success('Update successful', { keepAfterRouteChange: true });
           //this.router.navigate(['../../'], { relativeTo: this.route });
         },
         error: error => {
