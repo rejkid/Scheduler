@@ -15,6 +15,7 @@ import { ThemePalette } from '@angular/material/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import * as signalR from '@microsoft/signalr';
+import { Constants } from '../constants';
 
 const COLUMNS_SCHEMA = [
   {
@@ -49,6 +50,8 @@ const VALID_TO_SERVICE_TIMEOUT = 1000 * 60 * 60 * 24; // 1 DAY
 export class ScheduleComponent implements OnInit, AfterViewInit {
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  readonly CLEANER_STR = Constants.CLEANER_STR;
 
   form: FormGroup;
   id: string;
@@ -184,7 +187,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   }
 
   private getConcatPoolElement(poolElement: SchedulePoolElement): string {
-    if (this.poolElements[0].userFunction == "Cleaner") {
+    if (this.poolElements[0].userFunction == this.CLEANER_STR) {
       return this.getDisplayDate(poolElement.date) + "/" + poolElement.userFunction + "/" + poolElement.scheduleGroup;
     } else {
       return this.getDisplayDate(poolElement.date) + "/" + poolElement.userFunction;

@@ -20,6 +20,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import * as signalR from '@microsoft/signalr';
 import { UpperCasePipe } from '@angular/common';
+import { Constants } from '../../constants';
 
 const COLUMNS_SCHEMA = [
   {
@@ -54,6 +55,8 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  readonly CLEANER_STR = Constants.CLEANER_STR;
 
   dateFormat = `${environment.dateTimeFormat}`;
   dateTimeFormat = `${environment.dateTimeFormat}`;
@@ -181,7 +184,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
     return null;
   }
   onDutyChanged(event: any) {
-    if(event.value == "Cleaner") {
+    if(event.value == this.CLEANER_STR) {
       this.form.get('cleanerGroup').enable();
     } else {
       this.form.get('cleanerGroup').disable();
@@ -384,7 +387,7 @@ export class ScheduleAllocatorComponent implements OnInit, AfterViewInit {
   get isCleaner() {
     if(this.form == undefined)
      return false;
-    return this.form.get('function').value === "Cleaner"
+    return this.form.get('function').value === this.CLEANER_STR
   }
 
   convertServerDate2LocalStr(date: Date): string {
